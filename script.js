@@ -5,9 +5,9 @@
 const products = [
     {
         id: "workflow1",
-        name: "AI Medical Assistant",
-        shortDescription: "Instant AI-powered analysis of medical symptoms and health concerns.",
-        longDescription: "Our AI Medical Assistant provides instant, intelligent analysis of medical symptoms using advanced natural language processing. Get preliminary health insights, understand potential conditions, and receive guidance on next steps. This workflow integrates with leading medical databases to provide accurate, up-to-date information while maintaining your privacy.",
+        name: "AI Powered Remote Job Finder",
+        shortDescription: "An AI-powered job-matching engine that finds the best remote tech jobs for you—instantly and personalized.",
+        longDescription: "This intelligent job-matching system scans international remote job listings, evaluates how well each role aligns with your skills, experience, and certifications, and delivers a beautifully formatted email digest tailored just for you. Instead of endlessly searching job boards, you receive curated, high-scoring opportunities matched to your unique profile—saving time, boosting accuracy, and accelerating your path to career growth.",
         category: "Healthcare",
         image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop",
         tryUrl: "ai-medical-assistant.html",
