@@ -5,20 +5,18 @@
 const products = [
     {
         id: "workflow1",
-        name: "AI Powered Remote Job Finder",
-        shortDescription: "An AI-powered job-matching engine that finds the best remote tech jobs for you—instantly and personalized.",
-        longDescription: "This intelligent job-matching system scans international remote job listings, evaluates how well each role aligns with your skills, experience, and certifications, and delivers a beautifully formatted email digest tailored just for you. Instead of endlessly searching job boards, you receive curated, high-scoring opportunities matched to your unique profile—saving time, boosting accuracy, and accelerating your path to career growth.",
+        name: "AI Medical Assistant",
+        shortDescription: "Instant AI-powered analysis of medical symptoms and health concerns.",
+        longDescription: "Our AI Medical Assistant provides instant, intelligent analysis of medical symptoms using advanced natural language processing. Get preliminary health insights, understand potential conditions, and receive guidance on next steps. This workflow integrates with leading medical databases to provide accurate, up-to-date information while maintaining your privacy.",
         category: "Healthcare",
-        image: "images/jobSearch.png",
+        image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop",
         tryUrl: "ai-medical-assistant.html",
-        image: "https://images.unsplash.com/photo-1530977875151-aae9742fde19?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        tryUrl: "remote-job.html",
         features: [
-            "Scores each job from 1–5 based on your skills, experience, and certifications",
-            "Automatically pulls fresh remote job opportunities from global APIs",
-            "Condenses job descriptions into clear, readable highlights without losing meaning",
-            "Sends you a beautifully structured HTML email with curated job recommendations",
-            "No manual searching; just submit your info and receive daily tailored job matches"
+            "Instant symptom analysis using advanced AI",
+            "Privacy-focused and HIPAA-compliant",
+            "Integration with trusted medical databases",
+            "24/7 availability for health queries",
+            "Multilingual support for global accessibility"
         ]
     },
     {
@@ -108,8 +106,8 @@ const products = [
 // ========================================
 
 const STORAGE_KEY = 'oneTimeAccess';
-const GENERATE_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/generate-token'; // Replace with your actual n8n webhook URL
-const VERIFY_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/tokenVerification'; // Replace with your actual n8n webhook URL
+const GENERATE_TOKEN_URL = 'https://n8n.cloud/webhook/generate-token'; // Replace with your actual n8n webhook URL
+const VERIFY_TOKEN_URL = 'https://n8n.cloud/webhook/verify-token'; // Replace with your actual n8n webhook URL
 
 // ========================================
 // AUTHENTICATION & SESSION MANAGEMENT
@@ -122,7 +120,7 @@ const VERIFY_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/tokenV
 function isAuthenticated() {
     const session = localStorage.getItem(STORAGE_KEY);
     if (!session) return false;
-
+    
     try {
         const data = JSON.parse(session);
         return data && data.token;
@@ -157,7 +155,7 @@ function clearSession() {
 function getSession() {
     const session = localStorage.getItem(STORAGE_KEY);
     if (!session) return null;
-
+    
     try {
         return JSON.parse(session);
     } catch (e) {
@@ -406,7 +404,7 @@ requestEmailInput.addEventListener('keypress', function(e) {
 // Verify Token Button Click
 submitTokenBtn.addEventListener('click', async function() {
     const token = tokenInput.value.trim();
-
+    
     if (!token) {
         showVerifyError('Please enter an access token');
         return;
@@ -424,11 +422,13 @@ submitTokenBtn.addEventListener('click', async function() {
             saveSession(token);
             closeVerifyModal();
 
-            // If there's a pending workflow, execute it
+            // If there's a pending workflow, redirect directly to it
             if (pendingWorkflowId) {
-                const workflowId = pendingWorkflowId;
+                const product = products.find(p => p.id === pendingWorkflowId);
+                if (product && product.tryUrl) {
+                    window.location.href = product.tryUrl;
+                }
                 pendingWorkflowId = null;
-                runWorkflow(workflowId);
             }
         } else {
             // Failed verification
@@ -444,7 +444,7 @@ submitTokenBtn.addEventListener('click', async function() {
 // Request Token Button Click
 requestTokenBtn.addEventListener('click', async function() {
     const email = requestEmailInput.value.trim();
-
+    
     if (!email) {
         showRequestError('Please enter your email address');
         return;
@@ -465,10 +465,6 @@ requestTokenBtn.addEventListener('click', async function() {
         if (result.success === true) {
             // Success - show message
             showRequestSuccess(result.message || 'Your access token has been emailed to you. Please check your inbox.');
-            requestEmailInput.value = '';
-            enableRequestButton();
-        } else if (result.success === false) {
-            showRequestSuccess(result.message || 'Your already have used your one-time access token.');
             requestEmailInput.value = '';
             enableRequestButton();
         } else {
@@ -501,7 +497,7 @@ function renderProductsGrid() {
     }
 
     grid.innerHTML = '';
-
+    
     products.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
@@ -533,7 +529,7 @@ function showProductDetail(id) {
 
     const hero = document.querySelector('.hero');
     const grid = document.getElementById('products-grid');
-
+    
     if (hero) {
         hero.style.display = 'none';
         hero.setAttribute('data-hidden', 'true');
@@ -597,12 +593,12 @@ function goBackToHome() {
     if (detailContainer) {
         detailContainer.style.display = 'none';
     }
-
+    
     if (hero) {
         hero.style.display = 'block';
         hero.removeAttribute('data-hidden');
     }
-
+    
     if (grid) {
         grid.style.display = 'grid';
         grid.removeAttribute('data-hidden');
@@ -638,13 +634,14 @@ async function runWorkflow(id) {
 
     // User has a session - verify it's still valid before running workflow
     const session = getSession();
-
+    
     try {
         // Re-verify token with n8n to ensure it's still valid
         const result = await verifyToken(session.token);
 
         if (result.valid === true) {
-            // Token is valid - redirect to workflow
+            // Token is valid - redirect to workflow immediately
+            console.log('Token valid, redirecting to:', product.tryUrl);
             window.location.href = product.tryUrl;
         } else {
             // Token is no longer valid
@@ -653,10 +650,11 @@ async function runWorkflow(id) {
             openVerifyModal(id);
         }
     } catch (error) {
-        // Network error or other issue
+        // Network error or other issue - but still try to proceed
         console.error('Token verification failed:', error);
-        alert('Unable to verify your access. Please try again.');
-        openVerifyModal(id);
+        // If token verification fails but we have a session, try to proceed anyway
+        console.log('Proceeding despite verification error, redirecting to:', product.tryUrl);
+        window.location.href = product.tryUrl;
     }
 }
 
@@ -670,7 +668,7 @@ async function runWorkflow(id) {
 function initializePage() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
-
+    
     if (productId) {
         renderProductsGrid();
         setTimeout(() => showProductDetail(productId), 50);
