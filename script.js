@@ -414,28 +414,40 @@ submitTokenBtn.addEventListener('click', async function() {
     hideAllMessages();
 
     try {
+        console.log('Verifying token...');
         // Verify token with n8n
         const result = await verifyToken(token);
+        console.log('Verification result:', result);
 
         if (result.valid === true) {
+            console.log('Token valid! Saving session...');
             // Success - save session and close modal
             saveSession(token);
             closeVerifyModal();
 
+            console.log('Pending workflow ID:', pendingWorkflowId);
             // If there's a pending workflow, redirect directly to it
             if (pendingWorkflowId) {
                 const product = products.find(p => p.id === pendingWorkflowId);
+                console.log('Found product:', product);
                 if (product && product.tryUrl) {
+                    console.log('Redirecting to:', product.tryUrl);
                     window.location.href = product.tryUrl;
+                } else {
+                    console.error('Product or tryUrl not found');
                 }
                 pendingWorkflowId = null;
+            } else {
+                console.log('No pending workflow');
             }
         } else {
             // Failed verification
+            console.log('Token verification failed:', result.message);
             showVerifyError(result.message || 'Invalid or expired token');
             enableVerifyButton();
         }
     } catch (error) {
+        console.error('Error during verification:', error);
         showVerifyError('Unable to verify token. Please try again.');
         enableVerifyButton();
     }
