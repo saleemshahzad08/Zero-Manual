@@ -45,6 +45,32 @@
         </div>
     </footer>
 
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Access Token Required</h3>
+                <button class="modal-close" id="closeModalBtn" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Enter your unique access token to use this workflow.</p>
+                <div class="modal-form">
+                    <input 
+                        type="text" 
+                        id="tokenInput" 
+                        class="modal-input" 
+                        placeholder="Enter your access token"
+                        autocomplete="off"
+                    >
+                    <div id="loginError" class="modal-error"></div>
+                    <button id="submitTokenBtn" class="modal-button">
+                        <span id="buttonText">Verify Token</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
