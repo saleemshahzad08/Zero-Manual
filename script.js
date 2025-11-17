@@ -1,4 +1,7 @@
-// Products Data
+// ========================================
+// PRODUCTS DATA
+// ========================================
+
 const products = [
     {
         id: "workflow1",
@@ -98,17 +101,257 @@ const products = [
     }
 ];
 
-// Render Products Grid on Homepage
+// ========================================
+// AUTHENTICATION & SESSION MANAGEMENT
+// ========================================
+
+const STORAGE_KEY = 'oneTimeAccess';
+const VERIFY_TOKEN_URL = 'https://n8n.cloud/webhook/verifyToken'; // Replace with your actual n8n webhook URL
+
+/**
+ * Check if user is authenticated
+ * @returns {boolean}
+ */
+function isAuthenticated() {
+    const session = localStorage.getItem(STORAGE_KEY);
+    if (!session) return false;
+    
+    try {
+        const data = JSON.parse(session);
+        // Check for email and token (new response format)
+        return data && data.email && data.token;
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * Save authenticated session to localStorage
+ * @param {string} email - User's email from n8n response
+ * @param {string} token - The verified token
+ */
+function saveSession(email, token) {
+    const sessionData = {
+        email: email,
+        token: token,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+}
+
+/**
+ * Clear session from localStorage
+ */
+function clearSession() {
+    localStorage.removeItem(STORAGE_KEY);
+}
+
+/**
+ * Get current session data
+ * @returns {object|null}
+ */
+function getSession() {
+    const session = localStorage.getItem(STORAGE_KEY);
+    if (!session) return null;
+    
+    try {
+        return JSON.parse(session);
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * Authenticate with token via n8n webhook
+ * @param {string} token 
+ * @returns {Promise<object>}
+ */
+async function authenticateWithToken(token) {
+    try {
+        const response = await fetch(VERIFY_TOKEN_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: token.trim() })
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Authentication error:', error);
+        throw error;
+    }
+}
+
+// ========================================
+// MODAL MANAGEMENT
+// ========================================
+
+const modalOverlay = document.getElementById('loginModal');
+const tokenInput = document.getElementById('tokenInput');
+const submitBtn = document.getElementById('submitTokenBtn');
+const closeBtn = document.getElementById('closeModalBtn');
+const buttonText = document.getElementById('buttonText');
+const errorDiv = document.getElementById('loginError');
+
+let pendingWorkflowId = null; // Store which workflow is waiting for auth
+
+/**
+ * Open the login modal
+ * @param {string} workflowId - The workflow ID that triggered the modal
+ */
+function openLoginModal(workflowId = null) {
+    pendingWorkflowId = workflowId;
+    modalOverlay.classList.add('active');
+    tokenInput.value = '';
+    tokenInput.focus();
+    hideLoginError();
+}
+
+/**
+ * Close the login modal
+ */
+function closeLoginModal() {
+    modalOverlay.classList.remove('active');
+    tokenInput.value = '';
+    pendingWorkflowId = null;
+    hideLoginError();
+    enableSubmitButton();
+}
+
+/**
+ * Show error message in modal
+ * @param {string} message 
+ */
+function showLoginError(message) {
+    errorDiv.textContent = message;
+    errorDiv.classList.add('show');
+}
+
+/**
+ * Hide error message in modal
+ */
+function hideLoginError() {
+    errorDiv.textContent = '';
+    errorDiv.classList.remove('show');
+}
+
+/**
+ * Disable submit button during verification
+ */
+function disableSubmitButton() {
+    submitBtn.disabled = true;
+    buttonText.textContent = 'Verifying...';
+}
+
+/**
+ * Enable submit button
+ */
+function enableSubmitButton() {
+    submitBtn.disabled = false;
+    buttonText.textContent = 'Verify Token';
+}
+
+// ========================================
+// MODAL EVENT LISTENERS
+// ========================================
+
+// Close modal on close button click
+closeBtn.addEventListener('click', closeLoginModal);
+
+// Close modal on overlay click (outside modal)
+modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) {
+        closeLoginModal();
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+        closeLoginModal();
+    }
+});
+
+// Submit token on Enter key in input
+tokenInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        submitBtn.click();
+    }
+});
+
+// Submit token button click
+submitBtn.addEventListener('click', async function() {
+    const token = tokenInput.value.trim();
+    
+    if (!token) {
+        showLoginError('Please enter an access token');
+        return;
+    }
+
+    // Disable button and show loading state
+    disableSubmitButton();
+    hideLoginError();
+
+    try {
+        // Authenticate with n8n
+        const result = await authenticateWithToken(token);
+
+        // Check for new response format: { allowed, email, token } or { allowed, reason }
+        if (result.allowed === true && result.email && result.token) {
+            // Success - save session and close modal
+            saveSession(result.email, result.token);
+            closeLoginModal();
+
+            // If there's a pending workflow, execute it
+            if (pendingWorkflowId) {
+                const workflowId = pendingWorkflowId;
+                pendingWorkflowId = null;
+                runWorkflow(workflowId);
+            }
+        } else {
+            // Failed authentication
+            let errorMessage = 'Invalid access token';
+            
+            if (result.reason === 'used') {
+                errorMessage = 'This token has already been used';
+            } else if (result.reason === 'invalid') {
+                errorMessage = 'Invalid or expired token';
+            }
+            
+            showLoginError(errorMessage);
+            enableSubmitButton();
+        }
+    } catch (error) {
+        showLoginError('Unable to verify token. Please try again.');
+        enableSubmitButton();
+    }
+});
+
+// ========================================
+// PRODUCT RENDERING
+// ========================================
+
+/**
+ * Render products grid on homepage
+ */
 function renderProductsGrid() {
     const grid = document.getElementById('products-grid');
-    if (!grid) return;
+    if (!grid) {
+        return;
+    }
 
     if (products.length === 0) {
         grid.innerHTML = '<p class="error">No products available at the moment.</p>';
         return;
     }
 
-    // Clear and render products
     grid.innerHTML = '';
     
     products.forEach(product => {
@@ -129,7 +372,10 @@ function renderProductsGrid() {
     });
 }
 
-// Show Product Detail (stays on index.html)
+/**
+ * Show product detail (single page approach)
+ * @param {string} id - Product ID
+ */
 function showProductDetail(id) {
     const product = products.find(p => p.id === id);
     if (!product) {
@@ -137,14 +383,18 @@ function showProductDetail(id) {
         return;
     }
 
-    // Hide homepage content
     const hero = document.querySelector('.hero');
     const grid = document.getElementById('products-grid');
     
-    if (hero) hero.style.display = 'none';
-    if (grid) grid.style.display = 'none';
+    if (hero) {
+        hero.style.display = 'none';
+        hero.setAttribute('data-hidden', 'true');
+    }
+    if (grid) {
+        grid.style.display = 'none';
+        grid.setAttribute('data-hidden', 'true');
+    }
 
-    // Get or create detail container
     let detailContainer = document.getElementById('product-detail-container');
     if (!detailContainer) {
         detailContainer = document.createElement('div');
@@ -156,11 +406,9 @@ function showProductDetail(id) {
         }
     }
 
-    // Update page title and URL
     document.title = `${product.name} | AutoFlow`;
     window.history.pushState({ productId: id }, '', `?id=${id}`);
 
-    // Render product detail
     detailContainer.innerHTML = `
         <div class="product-detail-grid">
             <div class="product-detail-image-container">
@@ -190,25 +438,26 @@ function showProductDetail(id) {
     window.scrollTo(0, 0);
 }
 
-// Go Back to Homepage
+/**
+ * Go back to homepage
+ */
 function goBackToHome() {
     const hero = document.querySelector('.hero');
     const grid = document.getElementById('products-grid');
     const detailContainer = document.getElementById('product-detail-container');
 
-    // Hide detail container
     if (detailContainer) {
         detailContainer.style.display = 'none';
     }
     
-    // Show hero section
     if (hero) {
         hero.style.display = 'block';
+        hero.removeAttribute('data-hidden');
     }
     
-    // Show and re-render the products grid
     if (grid) {
         grid.style.display = 'grid';
+        grid.removeAttribute('data-hidden');
         renderProductsGrid();
     }
 
@@ -217,27 +466,73 @@ function goBackToHome() {
     window.scrollTo(0, 0);
 }
 
-// Run Workflow Function
-function runWorkflow(id) {
+// ========================================
+// WORKFLOW EXECUTION
+// ========================================
+
+/**
+ * Run workflow with authentication check
+ * @param {string} id - Product/Workflow ID
+ */
+async function runWorkflow(id) {
     const product = products.find(p => p.id === id);
-    if (product && product.tryUrl) {
-        window.location.href = product.tryUrl;
-    } else {
+    if (!product || !product.tryUrl) {
         alert('Workflow URL not configured for this product.');
+        return;
+    }
+
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+        // Not authenticated - open login modal
+        openLoginModal(id);
+        return;
+    }
+
+    // User has a session - verify it's still valid before running workflow
+    const session = getSession();
+    
+    try {
+        // Re-verify token with n8n to ensure it's still valid
+        const result = await authenticateWithToken(session.token);
+
+        if (result.allowed === true) {
+            // Token is valid - redirect to workflow
+            window.location.href = product.tryUrl;
+        } else {
+            // Token is no longer valid (already used or expired)
+            clearSession();
+            
+            let errorMessage = 'Your access token is no longer valid.';
+            if (result.reason === 'used') {
+                errorMessage = 'Your access token has already been used.';
+            }
+            
+            alert(errorMessage + ' Please enter a new token.');
+            openLoginModal(id);
+        }
+    } catch (error) {
+        // Network error or other issue
+        console.error('Token verification failed:', error);
+        alert('Unable to verify your access. Please try again.');
+        openLoginModal(id);
     }
 }
 
-// Initialize Page
+// ========================================
+// PAGE INITIALIZATION
+// ========================================
+
+/**
+ * Initialize page based on current location
+ */
 function initializePage() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     
     if (productId) {
-        // Render grid first, then show product detail
         renderProductsGrid();
         setTimeout(() => showProductDetail(productId), 50);
     } else {
-        // Normal homepage
         renderProductsGrid();
     }
 }
