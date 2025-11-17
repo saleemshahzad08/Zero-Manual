@@ -640,8 +640,7 @@ async function runWorkflow(id) {
         const result = await verifyToken(session.token);
 
         if (result.valid === true) {
-            // Token is valid - redirect to workflow immediately
-            console.log('Token valid, redirecting to:', product.tryUrl);
+            // Token is valid - redirect to workflow
             window.location.href = product.tryUrl;
         } else {
             // Token is no longer valid
@@ -650,11 +649,10 @@ async function runWorkflow(id) {
             openVerifyModal(id);
         }
     } catch (error) {
-        // Network error or other issue - but still try to proceed
+        // Network error or other issue
         console.error('Token verification failed:', error);
-        // If token verification fails but we have a session, try to proceed anyway
-        console.log('Proceeding despite verification error, redirecting to:', product.tryUrl);
-        window.location.href = product.tryUrl;
+        alert('Unable to verify your access. Please try again.');
+        openVerifyModal(id);
     }
 }
 
