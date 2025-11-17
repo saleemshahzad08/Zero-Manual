@@ -465,6 +465,10 @@ requestTokenBtn.addEventListener('click', async function() {
             showRequestSuccess(result.message || 'Your access token has been emailed to you. Please check your inbox.');
             requestEmailInput.value = '';
             enableRequestButton();
+        } else if (result.success === false) {
+            showRequestSuccess(result.message || 'Your already have used your one-time access token.');
+            requestEmailInput.value = '';
+            enableRequestButton();
         } else {
             // Failed request
             showRequestError(result.message || 'Failed to request access token. Please try again.');
