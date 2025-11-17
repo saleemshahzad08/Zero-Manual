@@ -266,12 +266,10 @@ function closeVerifyModal() {
     modalOverlay.classList.remove('active');
     tokenInput.value = '';
     requestEmailInput.value = '';
-    pendingWorkflowId = null;
     hideAllMessages();
     enableVerifyButton();
     enableRequestButton();
 }
-
 /**
  * Show error message in verify section
  * @param {string} message 
