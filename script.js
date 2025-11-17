@@ -5,18 +5,18 @@
 const products = [
     {
         id: "workflow1",
-        name: "AI Powered Remote Job Finder",
-        shortDescription: "An AI-powered job-matching engine that finds the best remote tech jobs for you—instantly and personalized.",
-        longDescription: "This intelligent job-matching system scans international remote job listings, evaluates how well each role aligns with your skills, experience, and certifications, and delivers a beautifully formatted email digest tailored just for you. Instead of endlessly searching job boards, you receive curated, high-scoring opportunities matched to your unique profile—saving time, boosting accuracy, and accelerating your path to career growth.",
+        name: "AI Medical Assistant",
+        shortDescription: "Instant AI-powered analysis of medical symptoms and health concerns.",
+        longDescription: "Our AI Medical Assistant provides instant, intelligent analysis of medical symptoms using advanced natural language processing. Get preliminary health insights, understand potential conditions, and receive guidance on next steps. This workflow integrates with leading medical databases to provide accurate, up-to-date information while maintaining your privacy.",
         category: "Healthcare",
-        image: "images/jobSearch.png",
-        tryUrl: "remote-job.html",
+        image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop",
+        tryUrl: "ai-medical-assistant.html",
         features: [
-            "Scores each job from 1–5 based on your skills, experience, and certifications",
-            "Automatically pulls fresh remote job opportunities from global APIs",
-            "Condenses job descriptions into clear, readable highlights without losing meaning",
-            "Sends you a beautifully structured HTML email with curated job recommendations",
-            "No manual searching; just submit your info and receive daily tailored job matches"
+            "Instant symptom analysis using advanced AI",
+            "Privacy-focused and HIPAA-compliant",
+            "Integration with trusted medical databases",
+            "24/7 availability for health queries",
+            "Multilingual support for global accessibility"
         ]
     },
     {
@@ -106,8 +106,8 @@ const products = [
 // ========================================
 
 const STORAGE_KEY = 'oneTimeAccess';
-const GENERATE_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/generate-token'; // Replace with your actual n8n webhook URL
-const VERIFY_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/tokenVerification'; // Replace with your actual n8n webhook URL
+const GENERATE_TOKEN_URL = 'https://n8n.cloud/webhook/generate-token'; // Replace with your actual n8n webhook URL
+const VERIFY_TOKEN_URL = 'https://n8n.cloud/webhook/verify-token'; // Replace with your actual n8n webhook URL
 
 // ========================================
 // AUTHENTICATION & SESSION MANAGEMENT
@@ -422,11 +422,13 @@ submitTokenBtn.addEventListener('click', async function() {
             saveSession(token);
             closeVerifyModal();
 
-            // If there's a pending workflow, execute it
+            // If there's a pending workflow, redirect directly to it
             if (pendingWorkflowId) {
-                const workflowId = pendingWorkflowId;
+                const product = products.find(p => p.id === pendingWorkflowId);
+                if (product && product.tryUrl) {
+                    window.location.href = product.tryUrl;
+                }
                 pendingWorkflowId = null;
-                runWorkflow(workflowId);
             }
         } else {
             // Failed verification
@@ -463,10 +465,6 @@ requestTokenBtn.addEventListener('click', async function() {
         if (result.success === true) {
             // Success - show message
             showRequestSuccess(result.message || 'Your access token has been emailed to you. Please check your inbox.');
-            requestEmailInput.value = '';
-            enableRequestButton();
-        } else if (result.success === false) {
-            showRequestSuccess(result.message || 'Your already have used your one-time access token.');
             requestEmailInput.value = '';
             enableRequestButton();
         } else {
