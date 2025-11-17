@@ -102,11 +102,16 @@ const products = [
 ];
 
 // ========================================
-// AUTHENTICATION & SESSION MANAGEMENT
+// CONFIGURATION
 // ========================================
 
 const STORAGE_KEY = 'oneTimeAccess';
-const VERIFY_TOKEN_URL = 'https://n8n.cloud/webhook/verifyToken'; // Replace with your actual n8n webhook URL
+const GENERATE_TOKEN_URL = 'https://n8n.cloud/webhook/generate-token'; // Replace with your actual n8n webhook URL
+const VERIFY_TOKEN_URL = 'https://n8n.cloud/webhook/verify-token'; // Replace with your actual n8n webhook URL
+
+// ========================================
+// AUTHENTICATION & SESSION MANAGEMENT
+// ========================================
 
 /**
  * Check if user is authenticated
@@ -118,8 +123,7 @@ function isAuthenticated() {
     
     try {
         const data = JSON.parse(session);
-        // Check for email and token (new response format)
-        return data && data.email && data.token;
+        return data && data.token;
     } catch (e) {
         return false;
     }
@@ -127,12 +131,10 @@ function isAuthenticated() {
 
 /**
  * Save authenticated session to localStorage
- * @param {string} email - User's email from n8n response
  * @param {string} token - The verified token
  */
-function saveSession(email, token) {
+function saveSession(token) {
     const sessionData = {
-        email: email,
         token: token,
         timestamp: Date.now()
     };
@@ -162,11 +164,11 @@ function getSession() {
 }
 
 /**
- * Authenticate with token via n8n webhook
+ * Verify token with n8n backend
  * @param {string} token 
- * @returns {Promise<object>}
+ * @returns {Promise<object>} Returns { valid: true/false, message: "..." }
  */
-async function authenticateWithToken(token) {
+async function verifyToken(token) {
     try {
         const response = await fetch(VERIFY_TOKEN_URL, {
             method: 'POST',
@@ -183,78 +185,183 @@ async function authenticateWithToken(token) {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Authentication error:', error);
+        console.error('Token verification error:', error);
         throw error;
     }
+}
+
+/**
+ * Request access token via email
+ * @param {string} email 
+ * @returns {Promise<object>} Returns { success: true/false, message: "..." }
+ */
+async function requestAccessToken(email) {
+    try {
+        const response = await fetch(GENERATE_TOKEN_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email.trim() })
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Token request error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Simple email validation
+ * @param {string} email 
+ * @returns {boolean}
+ */
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }
 
 // ========================================
 // MODAL MANAGEMENT
 // ========================================
 
-const modalOverlay = document.getElementById('loginModal');
+const modalOverlay = document.getElementById('verifyTokenModal');
 const tokenInput = document.getElementById('tokenInput');
-const submitBtn = document.getElementById('submitTokenBtn');
-const closeBtn = document.getElementById('closeModalBtn');
-const buttonText = document.getElementById('buttonText');
-const errorDiv = document.getElementById('loginError');
+const submitTokenBtn = document.getElementById('submitTokenBtn');
+const closeVerifyModalBtn = document.getElementById('closeVerifyModalBtn');
+const verifyButtonText = document.getElementById('verifyButtonText');
+const verifyErrorDiv = document.getElementById('verifyError');
+
+const requestEmailInput = document.getElementById('requestEmailInput');
+const requestTokenBtn = document.getElementById('requestTokenBtn');
+const requestButtonText = document.getElementById('requestButtonText');
+const requestSuccessDiv = document.getElementById('requestSuccess');
+const requestErrorDiv = document.getElementById('requestError');
 
 let pendingWorkflowId = null; // Store which workflow is waiting for auth
 
 /**
- * Open the login modal
+ * Open the verification modal
  * @param {string} workflowId - The workflow ID that triggered the modal
  */
-function openLoginModal(workflowId = null) {
+function openVerifyModal(workflowId = null) {
     pendingWorkflowId = workflowId;
     modalOverlay.classList.add('active');
     tokenInput.value = '';
+    requestEmailInput.value = '';
     tokenInput.focus();
-    hideLoginError();
+    hideAllMessages();
 }
 
 /**
- * Close the login modal
+ * Close the verification modal
  */
-function closeLoginModal() {
+function closeVerifyModal() {
     modalOverlay.classList.remove('active');
     tokenInput.value = '';
+    requestEmailInput.value = '';
     pendingWorkflowId = null;
-    hideLoginError();
-    enableSubmitButton();
+    hideAllMessages();
+    enableVerifyButton();
+    enableRequestButton();
 }
 
 /**
- * Show error message in modal
+ * Show error message in verify section
  * @param {string} message 
  */
-function showLoginError(message) {
-    errorDiv.textContent = message;
-    errorDiv.classList.add('show');
+function showVerifyError(message) {
+    verifyErrorDiv.textContent = message;
+    verifyErrorDiv.classList.add('show');
 }
 
 /**
- * Hide error message in modal
+ * Hide verify error message
  */
-function hideLoginError() {
-    errorDiv.textContent = '';
-    errorDiv.classList.remove('show');
+function hideVerifyError() {
+    verifyErrorDiv.textContent = '';
+    verifyErrorDiv.classList.remove('show');
 }
 
 /**
- * Disable submit button during verification
+ * Show success message in request section
+ * @param {string} message 
  */
-function disableSubmitButton() {
-    submitBtn.disabled = true;
-    buttonText.textContent = 'Verifying...';
+function showRequestSuccess(message) {
+    requestSuccessDiv.textContent = message;
+    requestSuccessDiv.classList.add('show');
 }
 
 /**
- * Enable submit button
+ * Hide request success message
  */
-function enableSubmitButton() {
-    submitBtn.disabled = false;
-    buttonText.textContent = 'Verify Token';
+function hideRequestSuccess() {
+    requestSuccessDiv.textContent = '';
+    requestSuccessDiv.classList.remove('show');
+}
+
+/**
+ * Show error message in request section
+ * @param {string} message 
+ */
+function showRequestError(message) {
+    requestErrorDiv.textContent = message;
+    requestErrorDiv.classList.add('show');
+}
+
+/**
+ * Hide request error message
+ */
+function hideRequestError() {
+    requestErrorDiv.textContent = '';
+    requestErrorDiv.classList.remove('show');
+}
+
+/**
+ * Hide all modal messages
+ */
+function hideAllMessages() {
+    hideVerifyError();
+    hideRequestSuccess();
+    hideRequestError();
+}
+
+/**
+ * Disable verify button during processing
+ */
+function disableVerifyButton() {
+    submitTokenBtn.disabled = true;
+    verifyButtonText.textContent = 'Verifying...';
+}
+
+/**
+ * Enable verify button
+ */
+function enableVerifyButton() {
+    submitTokenBtn.disabled = false;
+    verifyButtonText.textContent = 'Verify Token';
+}
+
+/**
+ * Disable request button during processing
+ */
+function disableRequestButton() {
+    requestTokenBtn.disabled = true;
+    requestButtonText.textContent = 'Sending...';
+}
+
+/**
+ * Enable request button
+ */
+function enableRequestButton() {
+    requestTokenBtn.disabled = false;
+    requestButtonText.textContent = 'Request Access Token';
 }
 
 // ========================================
@@ -262,52 +369,58 @@ function enableSubmitButton() {
 // ========================================
 
 // Close modal on close button click
-closeBtn.addEventListener('click', closeLoginModal);
+closeVerifyModalBtn.addEventListener('click', closeVerifyModal);
 
 // Close modal on overlay click (outside modal)
 modalOverlay.addEventListener('click', function(e) {
     if (e.target === modalOverlay) {
-        closeLoginModal();
+        closeVerifyModal();
     }
 });
 
 // Close modal on Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-        closeLoginModal();
+        closeVerifyModal();
     }
 });
 
-// Submit token on Enter key in input
+// Submit token on Enter key in token input
 tokenInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
-        submitBtn.click();
+        submitTokenBtn.click();
     }
 });
 
-// Submit token button click
-submitBtn.addEventListener('click', async function() {
+// Submit email on Enter key in email input
+requestEmailInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        requestTokenBtn.click();
+    }
+});
+
+// Verify Token Button Click
+submitTokenBtn.addEventListener('click', async function() {
     const token = tokenInput.value.trim();
     
     if (!token) {
-        showLoginError('Please enter an access token');
+        showVerifyError('Please enter an access token');
         return;
     }
 
-    // Disable button and show loading state
-    disableSubmitButton();
-    hideLoginError();
+    disableVerifyButton();
+    hideAllMessages();
 
     try {
-        // Authenticate with n8n
-        const result = await authenticateWithToken(token);
+        // Verify token with n8n
+        const result = await verifyToken(token);
 
-        // Check for new response format: { allowed, email, token } or { allowed, reason }
-        if (result.allowed === true && result.email && result.token) {
+        if (result.valid === true) {
             // Success - save session and close modal
-            saveSession(result.email, result.token);
-            closeLoginModal();
+            saveSession(token);
+            closeVerifyModal();
 
             // If there's a pending workflow, execute it
             if (pendingWorkflowId) {
@@ -316,21 +429,50 @@ submitBtn.addEventListener('click', async function() {
                 runWorkflow(workflowId);
             }
         } else {
-            // Failed authentication
-            let errorMessage = 'Invalid access token';
-            
-            if (result.reason === 'used') {
-                errorMessage = 'This token has already been used';
-            } else if (result.reason === 'invalid') {
-                errorMessage = 'Invalid or expired token';
-            }
-            
-            showLoginError(errorMessage);
-            enableSubmitButton();
+            // Failed verification
+            showVerifyError(result.message || 'Invalid or expired token');
+            enableVerifyButton();
         }
     } catch (error) {
-        showLoginError('Unable to verify token. Please try again.');
-        enableSubmitButton();
+        showVerifyError('Unable to verify token. Please try again.');
+        enableVerifyButton();
+    }
+});
+
+// Request Token Button Click
+requestTokenBtn.addEventListener('click', async function() {
+    const email = requestEmailInput.value.trim();
+    
+    if (!email) {
+        showRequestError('Please enter your email address');
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showRequestError('Please enter a valid email address');
+        return;
+    }
+
+    disableRequestButton();
+    hideAllMessages();
+
+    try {
+        // Request token from n8n
+        const result = await requestAccessToken(email);
+
+        if (result.success === true) {
+            // Success - show message
+            showRequestSuccess(result.message || 'Your access token has been emailed to you. Please check your inbox.');
+            requestEmailInput.value = '';
+            enableRequestButton();
+        } else {
+            // Failed request
+            showRequestError(result.message || 'Failed to request access token. Please try again.');
+            enableRequestButton();
+        }
+    } catch (error) {
+        showRequestError('Unable to request access token. Please try again.');
+        enableRequestButton();
     }
 });
 
@@ -483,8 +625,8 @@ async function runWorkflow(id) {
 
     // Check if user is authenticated
     if (!isAuthenticated()) {
-        // Not authenticated - open login modal
-        openLoginModal(id);
+        // Not authenticated - open modal
+        openVerifyModal(id);
         return;
     }
 
@@ -493,28 +635,22 @@ async function runWorkflow(id) {
     
     try {
         // Re-verify token with n8n to ensure it's still valid
-        const result = await authenticateWithToken(session.token);
+        const result = await verifyToken(session.token);
 
-        if (result.allowed === true) {
+        if (result.valid === true) {
             // Token is valid - redirect to workflow
             window.location.href = product.tryUrl;
         } else {
-            // Token is no longer valid (already used or expired)
+            // Token is no longer valid
             clearSession();
-            
-            let errorMessage = 'Your access token is no longer valid.';
-            if (result.reason === 'used') {
-                errorMessage = 'Your access token has already been used.';
-            }
-            
-            alert(errorMessage + ' Please enter a new token.');
-            openLoginModal(id);
+            alert(result.message || 'Your access token is no longer valid. Please verify again.');
+            openVerifyModal(id);
         }
     } catch (error) {
         // Network error or other issue
         console.error('Token verification failed:', error);
         alert('Unable to verify your access. Please try again.');
-        openLoginModal(id);
+        openVerifyModal(id);
     }
 }
 
