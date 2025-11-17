@@ -10,7 +10,7 @@ const products = [
         longDescription: "Our AI Medical Assistant provides instant, intelligent analysis of medical symptoms using advanced natural language processing. Get preliminary health insights, understand potential conditions, and receive guidance on next steps. This workflow integrates with leading medical databases to provide accurate, up-to-date information while maintaining your privacy.",
         category: "Healthcare",
         image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop",
-        tryUrl: "ai-medical-assistant.html",
+        tryUrl: "remote-job.html",
         features: [
             "Instant symptom analysis using advanced AI",
             "Privacy-focused and HIPAA-compliant",
