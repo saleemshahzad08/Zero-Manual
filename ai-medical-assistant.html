@@ -308,26 +308,54 @@
     </div>
 
     <!-- Login Modal (reused from global) -->
-    <div id="loginModal" class="modal-overlay">
+    <div id="verifyTokenModal" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
                 <h3 class="modal-title">Access Token Required</h3>
-                <button class="modal-close" id="closeModalBtn" aria-label="Close">&times;</button>
+                <button class="modal-close" id="closeVerifyModalBtn" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="modal-description">Enter your unique access token to use this workflow.</p>
-                <div class="modal-form">
-                    <input 
-                        type="text" 
-                        id="tokenInput" 
-                        class="modal-input" 
-                        placeholder="Enter your access token"
-                        autocomplete="off"
-                    >
-                    <div id="loginError" class="modal-error"></div>
-                    <button id="submitTokenBtn" class="modal-button">
-                        <span id="buttonText">Verify Token</span>
-                    </button>
+                <p class="modal-description">Enter your access token to use this workflow.</p>
+                
+                <!-- Token Input Section -->
+                <div id="tokenVerifySection" class="modal-section">
+                    <div class="modal-form">
+                        <input 
+                            type="text" 
+                            id="tokenInput" 
+                            class="modal-input" 
+                            placeholder="Enter your access token"
+                            autocomplete="off"
+                        >
+                        <div id="verifyError" class="modal-error"></div>
+                        <button id="submitTokenBtn" class="modal-button">
+                            <span id="verifyButtonText">Verify Token</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="modal-divider">
+                    <span>Don't have a token?</span>
+                </div>
+
+                <!-- Request Token Section -->
+                <div id="tokenRequestSection" class="modal-section">
+                    <p class="modal-section-title">Request an access token</p>
+                    <div class="modal-form">
+                        <input 
+                            type="email" 
+                            id="requestEmailInput" 
+                            class="modal-input" 
+                            placeholder="Enter your email address"
+                            autocomplete="email"
+                        >
+                        <div id="requestSuccess" class="modal-success"></div>
+                        <div id="requestError" class="modal-error"></div>
+                        <button id="requestTokenBtn" class="modal-button modal-button-secondary">
+                            <span id="requestButtonText">Request Access Token</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
