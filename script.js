@@ -5,18 +5,18 @@
 const products = [
     {
         id: "workflow1",
-        name: "AI Medical Assistant",
-        shortDescription: "Instant AI-powered analysis of medical symptoms and health concerns.",
-        longDescription: "Our AI Medical Assistant provides instant, intelligent analysis of medical symptoms using advanced natural language processing. Get preliminary health insights, understand potential conditions, and receive guidance on next steps. This workflow integrates with leading medical databases to provide accurate, up-to-date information while maintaining your privacy.",
+        name: "AI Powered Remote Job Search Assistant",
+        shortDescription: "An AI-powered job-matching engine that instantly finds the best remote tech jobs for you — tailored to your skills, experience, and preferences.",
+        longDescription: "The AI-Powered Remote Job Finder is an intelligent workflow that instantly discovers the most relevant remote job opportunities based on your skills, preferred tech stack, and career goals. Instead of manually searching multiple job boards, this automation analyzes your inputs, fetches high-quality openings from trusted platforms, filters out noise, and delivers only the most suitable roles. It’s designed to save time, reduce job-hunting frustration, and give you a personalized list of opportunities—within seconds.",
         category: "Healthcare",
-        image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop",
+        image: "images/jobSearch.png",
         tryUrl: "remote-job.html",
         features: [
-            "Instant symptom analysis using advanced AI",
-            "Privacy-focused and HIPAA-compliant",
-            "Integration with trusted medical databases",
-            "24/7 availability for health queries",
-            "Multilingual support for global accessibility"
+            "Analyzes your skills and preferences to return only the most relevant remote roles",
+            "Fetches job listings from multiple remote job boards and curated sources",
+            "Removes irrelevant, outdated, or low-quality jobs automatically",
+            "Delivers matched opportunities within seconds via automation",
+            "Presents each job with title, company, key skills, and job link for easy review."
         ]
     },
     {
@@ -266,10 +266,12 @@ function closeVerifyModal() {
     modalOverlay.classList.remove('active');
     tokenInput.value = '';
     requestEmailInput.value = '';
+    pendingWorkflowId = null;
     hideAllMessages();
     enableVerifyButton();
     enableRequestButton();
 }
+
 /**
  * Show error message in verify section
  * @param {string} message 
@@ -412,40 +414,28 @@ submitTokenBtn.addEventListener('click', async function() {
     hideAllMessages();
 
     try {
-        console.log('Verifying token...');
         // Verify token with n8n
         const result = await verifyToken(token);
-        console.log('Verification result:', result);
 
         if (result.valid === true) {
-            console.log('Token valid! Saving session...');
             // Success - save session and close modal
             saveSession(token);
             closeVerifyModal();
 
-            console.log('Pending workflow ID:', pendingWorkflowId);
             // If there's a pending workflow, redirect directly to it
             if (pendingWorkflowId) {
                 const product = products.find(p => p.id === pendingWorkflowId);
-                console.log('Found product:', product);
                 if (product && product.tryUrl) {
-                    console.log('Redirecting to:', product.tryUrl);
                     window.location.href = product.tryUrl;
-                } else {
-                    console.error('Product or tryUrl not found');
                 }
                 pendingWorkflowId = null;
-            } else {
-                console.log('No pending workflow');
             }
         } else {
             // Failed verification
-            console.log('Token verification failed:', result.message);
             showVerifyError(result.message || 'Invalid or expired token');
             enableVerifyButton();
         }
     } catch (error) {
-        console.error('Error during verification:', error);
         showVerifyError('Unable to verify token. Please try again.');
         enableVerifyButton();
     }
