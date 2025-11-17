@@ -340,24 +340,23 @@ submitTokenBtn.addEventListener('click', async function() {
         if (result.valid === true) {
             saveSession(token);
             
-            // Store the URL before closing modal
+            // Store the URL BEFORE anything else
             const urlToRedirect = pendingWorkflowUrl;
+            console.log('Token verified. Redirecting to:', urlToRedirect);
             
-            // Close modal immediately
+            // Close modal
             closeVerifyModal();
-            pendingWorkflowUrl = null;
             
-            // Redirect after a short delay to ensure modal is closed
-            setTimeout(() => {
-                if (urlToRedirect) {
-                    window.location.href = urlToRedirect;
-                }
-            }, 100);
+            // Redirect immediately (don't wait for modal animation)
+            if (urlToRedirect) {
+                window.location.href = urlToRedirect;
+            }
         } else {
             showVerifyError(result.message || 'Invalid or expired token');
             enableVerifyButton();
         }
     } catch (error) {
+        console.error('Verification error:', error);
         showVerifyError('Unable to verify token. Please try again.');
         enableVerifyButton();
     }
@@ -526,9 +525,6 @@ function goBackToHome() {
 // WORKFLOW EXECUTION
 // ========================================
 
-/**
- * FIX: Run workflow - Pass the actual URL to the modal
- */
 async function runWorkflow(id) {
     const product = products.find(p => p.id === id);
     if (!product || !product.tryUrl) {
@@ -536,8 +532,11 @@ async function runWorkflow(id) {
         return;
     }
 
+    console.log('runWorkflow called for:', id);
+    console.log('Product tryUrl:', product.tryUrl);
+
     if (!isAuthenticated()) {
-        // Not authenticated - open modal with the workflow URL
+        console.log('Not authenticated. Opening modal with URL:', product.tryUrl);
         openVerifyModal(product.tryUrl);
         return;
     }
@@ -549,10 +548,9 @@ async function runWorkflow(id) {
         const result = await verifyToken(session.token);
 
         if (result.valid === true) {
-            // Token is valid - redirect immediately
+            console.log('Token valid. Redirecting to:', product.tryUrl);
             window.location.href = product.tryUrl;
         } else {
-            // Token is no longer valid
             clearSession();
             alert(result.message || 'Your access token is no longer valid. Please verify again.');
             openVerifyModal(product.tryUrl);
