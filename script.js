@@ -107,7 +107,7 @@ const products = [
 
 const STORAGE_KEY = 'oneTimeAccess';
 const GENERATE_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/generate-token'; // Replace with your actual n8n webhook URL
-const VERIFY_TOKEN_URL = 'https://n8n.cloud/webhook/verify-token'; // Replace with your actual n8n webhook URL
+const VERIFY_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/tokenVerification'; // Replace with your actual n8n webhook URL
 
 // ========================================
 // AUTHENTICATION & SESSION MANAGEMENT
