@@ -9,7 +9,7 @@ const products = [
         shortDescription: "An AI-powered job-matching engine that finds the best remote tech jobs for you—instantly and personalized.",
         longDescription: "This intelligent job-matching system scans international remote job listings, evaluates how well each role aligns with your skills, experience, and certifications, and delivers a beautifully formatted email digest tailored just for you. Instead of endlessly searching job boards, you receive curated, high-scoring opportunities matched to your unique profile—saving time, boosting accuracy, and accelerating your path to career growth.",
         category: "Healthcare",
-        image: "https://images.unsplash.com/photo-1530977875151-aae9742fde19?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: "images/jobSearch.png",
         tryUrl: "remote-job.html",
         features: [
             "Scores each job from 1–5 based on your skills, experience, and certifications",
