@@ -106,17 +106,13 @@ const products = [
 // ========================================
 
 const STORAGE_KEY = 'oneTimeAccess';
-const GENERATE_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/generate-token'; // Replace with your actual n8n webhook URL
-const VERIFY_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/tokenVerification'; // Replace with your actual n8n webhook URL
+const GENERATE_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/generate-token';
+const VERIFY_TOKEN_URL = 'https://farooqhassnain786.app.n8n.cloud/webhook/tokenVerification';
 
 // ========================================
 // AUTHENTICATION & SESSION MANAGEMENT
 // ========================================
 
-/**
- * Check if user is authenticated
- * @returns {boolean}
- */
 function isAuthenticated() {
     const session = localStorage.getItem(STORAGE_KEY);
     if (!session) return false;
@@ -129,10 +125,6 @@ function isAuthenticated() {
     }
 }
 
-/**
- * Save authenticated session to localStorage
- * @param {string} token - The verified token
- */
 function saveSession(token) {
     const sessionData = {
         token: token,
@@ -141,17 +133,10 @@ function saveSession(token) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
 }
 
-/**
- * Clear session from localStorage
- */
 function clearSession() {
     localStorage.removeItem(STORAGE_KEY);
 }
 
-/**
- * Get current session data
- * @returns {object|null}
- */
 function getSession() {
     const session = localStorage.getItem(STORAGE_KEY);
     if (!session) return null;
@@ -163,11 +148,6 @@ function getSession() {
     }
 }
 
-/**
- * Verify token with n8n backend
- * @param {string} token 
- * @returns {Promise<object>} Returns { valid: true/false, message: "..." }
- */
 async function verifyToken(token) {
     try {
         const response = await fetch(VERIFY_TOKEN_URL, {
@@ -190,11 +170,6 @@ async function verifyToken(token) {
     }
 }
 
-/**
- * Request access token via email
- * @param {string} email 
- * @returns {Promise<object>} Returns { success: true/false, message: "..." }
- */
 async function requestAccessToken(email) {
     try {
         const response = await fetch(GENERATE_TOKEN_URL, {
@@ -217,11 +192,6 @@ async function requestAccessToken(email) {
     }
 }
 
-/**
- * Simple email validation
- * @param {string} email 
- * @returns {boolean}
- */
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -244,14 +214,10 @@ const requestButtonText = document.getElementById('requestButtonText');
 const requestSuccessDiv = document.getElementById('requestSuccess');
 const requestErrorDiv = document.getElementById('requestError');
 
-let pendingWorkflowId = null; // Store which workflow is waiting for auth
+let pendingWorkflowUrl = null;
 
-/**
- * Open the verification modal
- * @param {string} workflowId - The workflow ID that triggered the modal
- */
-function openVerifyModal(workflowId = null) {
-    pendingWorkflowId = workflowId;
+function openVerifyModal(workflowUrl = null) {
+    pendingWorkflowUrl = workflowUrl;
     modalOverlay.classList.add('active');
     tokenInput.value = '';
     requestEmailInput.value = '';
@@ -259,106 +225,66 @@ function openVerifyModal(workflowId = null) {
     hideAllMessages();
 }
 
-/**
- * Close the verification modal
- */
 function closeVerifyModal() {
     modalOverlay.classList.remove('active');
     tokenInput.value = '';
     requestEmailInput.value = '';
-    pendingWorkflowId = null;
     hideAllMessages();
     enableVerifyButton();
     enableRequestButton();
 }
 
-/**
- * Show error message in verify section
- * @param {string} message 
- */
 function showVerifyError(message) {
     verifyErrorDiv.textContent = message;
     verifyErrorDiv.classList.add('show');
 }
 
-/**
- * Hide verify error message
- */
 function hideVerifyError() {
     verifyErrorDiv.textContent = '';
     verifyErrorDiv.classList.remove('show');
 }
 
-/**
- * Show success message in request section
- * @param {string} message 
- */
 function showRequestSuccess(message) {
     requestSuccessDiv.textContent = message;
     requestSuccessDiv.classList.add('show');
 }
 
-/**
- * Hide request success message
- */
 function hideRequestSuccess() {
     requestSuccessDiv.textContent = '';
     requestSuccessDiv.classList.remove('show');
 }
 
-/**
- * Show error message in request section
- * @param {string} message 
- */
 function showRequestError(message) {
     requestErrorDiv.textContent = message;
     requestErrorDiv.classList.add('show');
 }
 
-/**
- * Hide request error message
- */
 function hideRequestError() {
     requestErrorDiv.textContent = '';
     requestErrorDiv.classList.remove('show');
 }
 
-/**
- * Hide all modal messages
- */
 function hideAllMessages() {
     hideVerifyError();
     hideRequestSuccess();
     hideRequestError();
 }
 
-/**
- * Disable verify button during processing
- */
 function disableVerifyButton() {
     submitTokenBtn.disabled = true;
     verifyButtonText.textContent = 'Verifying...';
 }
 
-/**
- * Enable verify button
- */
 function enableVerifyButton() {
     submitTokenBtn.disabled = false;
     verifyButtonText.textContent = 'Verify Token';
 }
 
-/**
- * Disable request button during processing
- */
 function disableRequestButton() {
     requestTokenBtn.disabled = true;
     requestButtonText.textContent = 'Sending...';
 }
 
-/**
- * Enable request button
- */
 function enableRequestButton() {
     requestTokenBtn.disabled = false;
     requestButtonText.textContent = 'Request Access Token';
@@ -368,24 +294,20 @@ function enableRequestButton() {
 // MODAL EVENT LISTENERS
 // ========================================
 
-// Close modal on close button click
 closeVerifyModalBtn.addEventListener('click', closeVerifyModal);
 
-// Close modal on overlay click (outside modal)
 modalOverlay.addEventListener('click', function(e) {
     if (e.target === modalOverlay) {
         closeVerifyModal();
     }
 });
 
-// Close modal on Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
         closeVerifyModal();
     }
 });
 
-// Submit token on Enter key in token input
 tokenInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -393,7 +315,6 @@ tokenInput.addEventListener('keypress', function(e) {
     }
 });
 
-// Submit email on Enter key in email input
 requestEmailInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -401,7 +322,7 @@ requestEmailInput.addEventListener('keypress', function(e) {
     }
 });
 
-// Verify Token Button Click
+// FIX: Verify Token Button Click - Now redirects after modal closes
 submitTokenBtn.addEventListener('click', async function() {
     const token = tokenInput.value.trim();
 
@@ -414,22 +335,25 @@ submitTokenBtn.addEventListener('click', async function() {
     hideAllMessages();
 
     try {
-        // Verify token with n8n
         const result = await verifyToken(token);
 
         if (result.valid === true) {
-            // Success - save session and close modal
             saveSession(token);
+            
+            // Store the URL before closing modal
+            const urlToRedirect = pendingWorkflowUrl;
+            
+            // Close modal immediately
             closeVerifyModal();
-
-            // If there's a pending workflow, execute it
-            if (pendingWorkflowId) {
-                const workflowId = pendingWorkflowId;
-                pendingWorkflowId = null;
-                runWorkflow(workflowId);
-            }
+            pendingWorkflowUrl = null;
+            
+            // Redirect after a short delay to ensure modal is closed
+            setTimeout(() => {
+                if (urlToRedirect) {
+                    window.location.href = urlToRedirect;
+                }
+            }, 100);
         } else {
-            // Failed verification
             showVerifyError(result.message || 'Invalid or expired token');
             enableVerifyButton();
         }
@@ -439,7 +363,6 @@ submitTokenBtn.addEventListener('click', async function() {
     }
 });
 
-// Request Token Button Click
 requestTokenBtn.addEventListener('click', async function() {
     const email = requestEmailInput.value.trim();
 
@@ -457,11 +380,9 @@ requestTokenBtn.addEventListener('click', async function() {
     hideAllMessages();
 
     try {
-        // Request token from n8n
         const result = await requestAccessToken(email);
 
         if (result.success === true) {
-            // Success - show message
             showRequestSuccess(result.message || 'Your access token has been emailed to you. Please check your inbox.');
             requestEmailInput.value = '';
             enableRequestButton();
@@ -470,7 +391,6 @@ requestTokenBtn.addEventListener('click', async function() {
             requestEmailInput.value = '';
             enableRequestButton();
         } else {
-            // Failed request
             showRequestError(result.message || 'Failed to request access token. Please try again.');
             enableRequestButton();
         }
@@ -484,9 +404,6 @@ requestTokenBtn.addEventListener('click', async function() {
 // PRODUCT RENDERING
 // ========================================
 
-/**
- * Render products grid on homepage
- */
 function renderProductsGrid() {
     const grid = document.getElementById('products-grid');
     if (!grid) {
@@ -518,10 +435,6 @@ function renderProductsGrid() {
     });
 }
 
-/**
- * Show product detail (single page approach)
- * @param {string} id - Product ID
- */
 function showProductDetail(id) {
     const product = products.find(p => p.id === id);
     if (!product) {
@@ -584,9 +497,6 @@ function showProductDetail(id) {
     window.scrollTo(0, 0);
 }
 
-/**
- * Go back to homepage
- */
 function goBackToHome() {
     const hero = document.querySelector('.hero');
     const grid = document.getElementById('products-grid');
@@ -617,8 +527,7 @@ function goBackToHome() {
 // ========================================
 
 /**
- * Run workflow with authentication check
- * @param {string} id - Product/Workflow ID
+ * FIX: Run workflow - Pass the actual URL to the modal
  */
 async function runWorkflow(id) {
     const product = products.find(p => p.id === id);
@@ -627,34 +536,31 @@ async function runWorkflow(id) {
         return;
     }
 
-    // Check if user is authenticated
     if (!isAuthenticated()) {
-        // Not authenticated - open modal
-        openVerifyModal(id);
+        // Not authenticated - open modal with the workflow URL
+        openVerifyModal(product.tryUrl);
         return;
     }
 
-    // User has a session - verify it's still valid before running workflow
+    // User has a session - verify it's still valid
     const session = getSession();
 
     try {
-        // Re-verify token with n8n to ensure it's still valid
         const result = await verifyToken(session.token);
 
         if (result.valid === true) {
-            // Token is valid - redirect to workflow
+            // Token is valid - redirect immediately
             window.location.href = product.tryUrl;
         } else {
             // Token is no longer valid
             clearSession();
             alert(result.message || 'Your access token is no longer valid. Please verify again.');
-            openVerifyModal(id);
+            openVerifyModal(product.tryUrl);
         }
     } catch (error) {
-        // Network error or other issue
         console.error('Token verification failed:', error);
         alert('Unable to verify your access. Please try again.');
-        openVerifyModal(id);
+        openVerifyModal(product.tryUrl);
     }
 }
 
@@ -662,9 +568,6 @@ async function runWorkflow(id) {
 // PAGE INITIALIZATION
 // ========================================
 
-/**
- * Initialize page based on current location
- */
 function initializePage() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
@@ -677,10 +580,8 @@ function initializePage() {
     }
 }
 
-// Run on page load
 document.addEventListener('DOMContentLoaded', initializePage);
 
-// Handle browser back/forward buttons
 window.addEventListener('popstate', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
