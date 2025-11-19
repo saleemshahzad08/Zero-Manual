@@ -310,11 +310,27 @@
             .then(response => {
                 document.getElementById('confirmation').classList.add('show');
                 this.reset();
+                
+                // Clear the session token
+                localStorage.removeItem('oneTimeAccess');
+                
+                // Redirect back to index.html after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
             })
             .catch(error => {
                 // Keep the confirmation for a smooth user experience, even on a mock error
                 document.getElementById('confirmation').classList.add('show');
                 this.reset();
+                
+                // Clear the session token
+                localStorage.removeItem('oneTimeAccess');
+                
+                // Redirect back to index.html after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
             });
         });
     </script>
