@@ -5,15 +5,15 @@
 const products = [
     {
         id: "workflow1",
-        name: "AI Powered Remote Job Finder",
-        shortDescription: "An AI-powered job-matching engine that finds the best remote tech jobs for you—instantly and personalized.",
-        longDescription: "This intelligent job-matching system scans international remote job listings, evaluates how well each role aligns with your skills, experience, and certifications, and delivers a beautifully formatted email digest tailored just for you. Instead of endlessly searching job boards, you receive curated, high-scoring opportunities matched to your unique profile—saving time, boosting accuracy, and accelerating your path to career growth.",
+        name: "JobMatch Pro",
+        shortDescription: "An AI-powered job-matching engine that finds the best tech jobs for you—instantly and personalized.",
+        longDescription: "This intelligent job-matching system scans international job listings, including remote and on-premises opportunities, evaluates how well each role aligns with your skills, experience, and certifications, and delivers a beautifully formatted email digest tailored just for you. Instead of endlessly searching job boards, you receive curated, high-scoring opportunities matched to your unique profile—saving time, boosting accuracy, and accelerating your path to career growth.",
         category: "Healthcare",
         image: "images/jobSearch.png",
         tryUrl: "remote-job.html",
         features: [
+            "Automatically pulls fresh job opportunities from global APIs, including both remote and on-premises roles",
             "Scores each job from 1–5 based on your skills, experience, and certifications",
-            "Automatically pulls fresh remote job opportunities from global APIs",
             "Condenses job descriptions into clear, readable highlights without losing meaning",
             "Sends you a beautifully structured HTML email with curated job recommendations",
             "No manual searching; just submit your info and receive daily tailored job matches"
