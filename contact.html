@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | ZeroManual - Get in Touch</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Page-specific styles */
+        body {
+            background: #f9fafb;
+        }
+
+        .contact-hero {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .contact-hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .contact-info-section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2rem;
+        }
+
+        .contact-info-item {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .contact-info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .contact-info-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-info-content {
+            font-size: 1.05rem;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        .contact-info-content a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-info-content a:hover {
+            color: #4f46e5;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: #f3f4f6;
+            border-radius: 50%;
+            text-decoration: none;
+            color: #6366f1;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background: #6366f1;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .contact-form-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form-section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            color: #1f2937;
+            background: #ffffff;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-message {
+            display: none;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        .form-message.success {
+            display: block;
+            background: #f0fdf4;
+            border: 1px solid #dcfce7;
+            color: #15803d;
+        }
+
+        .form-message.error {
+            display: block;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .contact-hero-title {
+                font-size: 2rem;
+            }
+
+            .contact-hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .contact-form-section {
+                padding: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">ZeroManual</h1>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Workflows</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contact.html" class="nav-link active">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="contact-hero">
+        <div class="container">
+            <h2 class="contact-hero-title">Get In Touch</h2>
+            <p class="contact-hero-subtitle">Have questions or need support? We'd love to hear from you. Contact our team today.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="contact-wrapper">
+        <div class="contact-grid">
+            <!-- Contact Information -->
+            <div class="contact-info-section">
+                <h3>Contact Information</h3>
+                
+                <div class="contact-info-item">
+                    <div class="contact-info-label">Email</div>
+                    <div class="contact-info-content">
+                        <a href="mailto:support@zeromanual.com">support@zeromanual.com</a><br>
+                        <a href="mailto:hello@zeromanual.com">hello@zeromanual.com</a>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <div class="contact-info-label">Phone</div>
+                    <div class="contact-info-content">
+                        <a href="tel:+1-800-123-4567">+1 (800) 123-4567</a>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <div class="contact-info-label">Address</div>
+                    <div class="contact-info-content">
+                        123 Innovation Drive<br>
+                        San Francisco, CA 94105<br>
+                        United States
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <div class="contact-info-label">Business Hours</div>
+                    <div class="contact-info-content">
+                        Monday - Friday: 9:00 AM - 6:00 PM PST<br>
+                        Saturday - Sunday: Closed
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <div class="contact-info-label">Follow Us</div>
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="LinkedIn">🔗</a>
+                        <a href="#" class="social-link" title="Twitter">𝕏</a>
+                        <a href="#" class="social-link" title="GitHub">💻</a>
+                        <a href="#" class="social-link" title="Facebook">f</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form-section">
+                <h3>Send us a Message</h3>
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full Name <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject <span class="required">*</span></label>
+                        <input type="text" id="subject" name="subject" placeholder="How can we help?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message <span class="required">*</span></label>
+                        <textarea id="message" name="message" placeholder="Tell us more about your inquiry..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button">
+                        <span id="submitButtonText">Send Message</span>
+                    </button>
+
+                    <div id="formMessage" class="form-message"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ZeroManual. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const contactForm = document.getElementById('contactForm');
+        const formMessage = document.getElementById('formMessage');
+        const submitButton = contactForm.querySelector('.submit-button');
+        const submitButtonText = document.getElementById('submitButtonText');
+
+        const N8N_WEBHOOK_URL = 'https://your-n8n-webhook-url-here.com/webhook/contact-form';
+
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                timestamp: new Date().toISOString()
+            };
+
+            // Disable button during submission
+            submitButton.disabled = true;
+            submitButtonText.textContent = 'Sending...';
+            formMessage.classList.remove('success', 'error');
+            formMessage.textContent = '';
+
+            try {
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    formMessage.classList.add('success');
+                    formMessage.textContent = '✅ Thank you for your message! We\'ll get back to you within 24 hours.';
+                    this.reset();
+                    
+                    setTimeout(() => {
+                        formMessage.classList.remove('success');
+                    }, 5000);
+                } else {
+                    throw new Error('Failed to send message');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                formMessage.classList.add('error');
+                formMessage.textContent = '❌ Something went wrong. Please try again later.';
+                
+                setTimeout(() => {
+                    formMessage.classList.remove('error');
+                }, 5000);
+            } finally {
+                submitButton.disabled = false;
+                submitButtonText.textContent = 'Send Message';
+            }
+        });
+    </script>
+</body>
+</html>
