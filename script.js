@@ -543,6 +543,11 @@ function goBackToHome() {
 // WORKFLOW EXECUTION
 // ========================================
 
+// ========================================
+// WORKFLOW EXECUTION - FIXED VERSION
+// ========================================
+// REPLACE the entire runWorkflow() function in your script.js with this:
+
 async function runWorkflow(id) {
     const product = products.find(p => p.id === id);
     if (!product || !product.tryUrl) {
@@ -553,33 +558,38 @@ async function runWorkflow(id) {
     console.log('runWorkflow called for:', id);
     console.log('Product tryUrl:', product.tryUrl);
 
-    if (!isAuthenticated()) {
-        console.log('Not authenticated. Opening modal with URL:', product.tryUrl);
+    // Check if user has a valid session
+    const session = getSession();
+    
+    if (!session || !session.token) {
+        // No token - open modal directly
+        console.log('No session found. Opening modal with URL:', product.tryUrl);
         openVerifyModal(product.tryUrl);
         return;
     }
 
-    // User has a session - verify it's still valid
-    const session = getSession();
-
+    // User has a session - verify it's still valid with backend
     try {
+        console.log('Verifying existing token...');
         const result = await verifyToken(session.token);
 
         if (result.valid === true) {
             console.log('Token valid. Redirecting to:', product.tryUrl);
             window.location.href = product.tryUrl;
         } else {
+            // Token is invalid - clear it and open modal
+            console.log('Token invalid. Clearing and opening modal.');
             clearSession();
-            alert(result.message || 'Your access token is no longer valid. Please verify again.');
             openVerifyModal(product.tryUrl);
         }
     } catch (error) {
+        // Backend verification failed - clear session and open modal
         console.error('Token verification failed:', error);
-        alert('Unable to verify your access. Please try again.');
+        console.log('Clearing session and opening modal due to verification error.');
+        clearSession();
         openVerifyModal(product.tryUrl);
     }
 }
-
 // ========================================
 // PAGE INITIALIZATION
 // ========================================
