@@ -384,12 +384,10 @@
         // ========================================
         
         const STORAGE_KEY = 'oneTimeAccess';
-        const SESSION_FLAG_KEY = 'remoteJobAccessed';
+        const TOKEN_EXPIRY_TIME = 120000; // 2 minutes - token expires after this time from creation
 
         function checkTokenAccess() {
             console.log('=== Checking Token Access ===');
-            console.log('sessionStorage contents:', sessionStorage);
-            console.log('SESSION_FLAG_KEY:', SESSION_FLAG_KEY);
             
             try {
                 const session = localStorage.getItem(STORAGE_KEY);
@@ -403,25 +401,25 @@
                 const data = JSON.parse(session);
                 console.log('Parsed session data:', data);
                 
-                if (data && data.token) {
-                    console.log('✅ Valid token found:', data.token.substring(0, 10) + '...');
-                    
-                    // Check if form was already submitted in this session
-                    const alreadyAccessed = sessionStorage.getItem(SESSION_FLAG_KEY);
-                    if (alreadyAccessed) {
-                        console.warn('❌ This session has already accessed and used the form');
-                        return false;
-                    }
-                    
-                    // Mark this session as having accessed the form (one-time per session)
-                    sessionStorage.setItem(SESSION_FLAG_KEY, 'true');
-                    console.log('✅ Session flagged - form access allowed once per browser session');
-                    
-                    return true;
-                } else {
-                    console.warn('❌ No valid token in session data');
+                if (!data || !data.token || !data.timestamp) {
+                    console.warn('❌ Invalid session data structure');
                     return false;
                 }
+
+                // Check if token has expired
+                const currentTime = Date.now();
+                const tokenAge = currentTime - data.timestamp;
+                console.log('Token age:', tokenAge + 'ms, Expiry time:', TOKEN_EXPIRY_TIME + 'ms');
+                
+                if (tokenAge > TOKEN_EXPIRY_TIME) {
+                    console.warn('❌ Token has expired');
+                    localStorage.removeItem(STORAGE_KEY);
+                    return false;
+                }
+                
+                console.log('✅ Valid and fresh token found:', data.token.substring(0, 10) + '...');
+                return true;
+                
             } catch (error) {
                 console.error('❌ Error checking token:', error);
                 return false;
@@ -515,9 +513,8 @@
                             countryInput.removeAttribute('required');
                         }
                         
-                        // Clear both storage keys
+                        // Clear token only on successful submission
                         localStorage.removeItem(STORAGE_KEY);
-                        sessionStorage.removeItem(SESSION_FLAG_KEY);
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
@@ -537,9 +534,8 @@
                             countryInput.removeAttribute('required');
                         }
                         
-                        // Clear both storage keys
+                        // Clear token on error too
                         localStorage.removeItem(STORAGE_KEY);
-                        sessionStorage.removeItem(SESSION_FLAG_KEY);
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
