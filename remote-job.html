@@ -384,11 +384,19 @@
         // ========================================
         
         const STORAGE_KEY = 'oneTimeAccess';
+        const SESSION_FLAG_KEY = 'remoteJobAccessed';
 
         function checkTokenAccess() {
             console.log('=== Checking Token Access ===');
             
             try {
+                // Check if this session already accessed the form
+                const alreadyAccessed = sessionStorage.getItem(SESSION_FLAG_KEY);
+                if (alreadyAccessed) {
+                    console.warn('❌ This session has already accessed the form');
+                    return false;
+                }
+
                 const session = localStorage.getItem(STORAGE_KEY);
                 console.log('Session value:', session);
                 
@@ -400,19 +408,14 @@
                 const data = JSON.parse(session);
                 console.log('Parsed session data:', data);
                 
-                // Check if token exists AND hasn't been marked as used
-                if (data && data.token && data.active === true) {
-                    console.log('✅ Valid active token found:', data.token.substring(0, 10) + '...');
+                if (data && data.token) {
+                    console.log('✅ Valid token found:', data.token.substring(0, 10) + '...');
                     
-                    // Mark token as used (consumed)
-                    data.active = false;
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                    console.log('Token marked as used');
+                    // Mark this session as having accessed the form (one-time per session)
+                    sessionStorage.setItem(SESSION_FLAG_KEY, 'true');
+                    console.log('Session flagged - form can only be accessed once per browser session');
                     
                     return true;
-                } else if (data && data.token && data.active === false) {
-                    console.warn('❌ Token has already been used');
-                    return false;
                 } else {
                     console.warn('❌ No valid token in session data');
                     return false;
@@ -510,7 +513,9 @@
                             countryInput.removeAttribute('required');
                         }
                         
+                        // Clear both storage keys
                         localStorage.removeItem(STORAGE_KEY);
+                        sessionStorage.removeItem(SESSION_FLAG_KEY);
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
@@ -530,7 +535,9 @@
                             countryInput.removeAttribute('required');
                         }
                         
+                        // Clear both storage keys
                         localStorage.removeItem(STORAGE_KEY);
+                        sessionStorage.removeItem(SESSION_FLAG_KEY);
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
