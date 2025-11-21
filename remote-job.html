@@ -164,7 +164,6 @@
             padding-right: 40px;
         }
 
-        /* Hidden field animation */
         .form-group.hidden {
             display: none;
         }
@@ -232,7 +231,6 @@
             }
         }
 
-        /* Unauthorized access message */
         .unauthorized-message {
             display: none;
             background: #fee2e2;
@@ -290,7 +288,7 @@
     <div class="page-container">
         <a href="index.html" class="back-link">Back to Workflows</a>
 
-        <div id="authorizedContent">
+        <div id="authorizedContent" style="display: none;">
             <div class="page-header">
                 <span class="ai-badge">AI-Powered Career Tool</span>
                 <h1 class="page-title">Smart Job Finder</h1>
@@ -328,7 +326,6 @@
                         </div>
                     </div>
 
-                    <!-- New Job Type Dropdown -->
                     <div class="form-row">
                         <div class="form-group">
                             <label for="jobType">Job Type <span class="required">*</span></label>
@@ -339,7 +336,6 @@
                             </select>
                         </div>
 
-                        <!-- Conditional Country Field -->
                         <div class="form-group hidden" id="countryGroup">
                             <label for="country">Country <span class="required">*</span></label>
                             <input type="text" id="country" name="country" placeholder="e.g., United States">
@@ -387,38 +383,39 @@
         // TOKEN VERIFICATION
         // ========================================
         
-        const VERIFY_TOKEN_URL = 'https://hussainsaleem.app.n8n.cloud/webhook/tokenVerification';
         const STORAGE_KEY = 'oneTimeAccess';
 
-        function verifyTokenAccess() {
-            // Check if a valid session token exists locally
-            // We only check for local presence, not backend verification
-            // because the backend treats these as one-time tokens
+        function checkTokenAccess() {
+            console.log('=== Checking Token Access ===');
             
-            const session = localStorage.getItem(STORAGE_KEY);
-            
-            if (!session) {
-                console.warn('No session found in localStorage');
-                return false;
-            }
-
             try {
-                const data = JSON.parse(session);
+                const session = localStorage.getItem(STORAGE_KEY);
+                console.log('localStorage contents:', localStorage);
+                console.log('Session value:', session);
                 
-                if (!data.token) {
-                    console.warn('No token in session data');
+                if (!session) {
+                    console.warn('❌ No session found');
                     return false;
                 }
 
-                console.log('Valid session token found locally');
-                return true;
-            } catch (e) {
-                console.warn('Failed to parse session:', e);
+                const data = JSON.parse(session);
+                console.log('Parsed session data:', data);
+                
+                if (data && data.token) {
+                    console.log('✅ Valid token found:', data.token.substring(0, 10) + '...');
+                    return true;
+                } else {
+                    console.warn('❌ No token in session data');
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ Error checking token:', error);
                 return false;
             }
         }
 
         function showUnauthorized() {
+            console.log('Showing unauthorized message');
             const authorizedContent = document.getElementById('authorizedContent');
             const unauthorizedMessage = document.getElementById('unauthorizedMessage');
             
@@ -431,6 +428,7 @@
         }
 
         function showAuthorized() {
+            console.log('Showing authorized content');
             const authorizedContent = document.getElementById('authorizedContent');
             const unauthorizedMessage = document.getElementById('unauthorizedMessage');
             
@@ -443,83 +441,94 @@
         }
 
         // ========================================
-        // PAGE INITIALIZATION - VERIFY TOKEN FIRST
+        // PAGE INITIALIZATION - CHECK TOKEN IMMEDIATELY
         // ========================================
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const isAuthorized = verifyTokenAccess();
-            
-            if (isAuthorized) {
-                showAuthorized();
-                initializeForm();
-            }
-        });
+        console.log('Page loaded, checking access...');
+
+        if (checkTokenAccess()) {
+            showAuthorized();
+            initializeForm();
+        } else {
+            showUnauthorized();
+        }
 
         // ========================================
-        // FORM LOGIC (only runs if authorized)
+        // FORM LOGIC
         // ========================================
 
         function initializeForm() {
-            // Toggle country field based on job type selection
             const jobTypeSelect = document.getElementById('jobType');
             const countryGroup = document.getElementById('countryGroup');
             const countryInput = document.getElementById('country');
 
-            jobTypeSelect.addEventListener('change', function() {
-                if (this.value === 'on-premises') {
-                    countryGroup.classList.remove('hidden');
-                    countryGroup.classList.add('show');
-                    countryInput.setAttribute('required', 'required');
-                } else {
-                    countryGroup.classList.add('hidden');
-                    countryGroup.classList.remove('show');
-                    countryInput.removeAttribute('required');
-                    countryInput.value = '';
-                }
-            });
-
-            // Form submission handler
-            document.getElementById('resumeForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const formData = new FormData(this);
-
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    document.getElementById('confirmation').classList.add('show');
-                    this.reset();
-                    
-                    // Reset the country field visibility
-                    countryGroup.classList.add('hidden');
-                    countryGroup.classList.remove('show');
-                    countryInput.removeAttribute('required');
-                    
-                    // Clear the session token
-                    localStorage.removeItem(STORAGE_KEY);
-                    
-                    // Redirect back to index.html after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                })
-                .catch(error => {
-                    document.getElementById('confirmation').classList.add('show');
-                    this.reset();
-                    
-                    countryGroup.classList.add('hidden');
-                    countryGroup.classList.remove('show');
-                    countryInput.removeAttribute('required');
-                    
-                    localStorage.removeItem(STORAGE_KEY);
-                    
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
+            if (jobTypeSelect) {
+                jobTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'on-premises') {
+                        countryGroup.classList.remove('hidden');
+                        countryGroup.classList.add('show');
+                        countryInput.setAttribute('required', 'required');
+                    } else {
+                        countryGroup.classList.add('hidden');
+                        countryGroup.classList.remove('show');
+                        countryInput.removeAttribute('required');
+                        countryInput.value = '';
+                    }
                 });
-            });
+            }
+
+            const resumeForm = document.getElementById('resumeForm');
+            if (resumeForm) {
+                resumeForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        const confirmation = document.getElementById('confirmation');
+                        if (confirmation) {
+                            confirmation.classList.add('show');
+                        }
+                        this.reset();
+                        
+                        if (countryGroup) {
+                            countryGroup.classList.add('hidden');
+                            countryGroup.classList.remove('show');
+                            countryInput.removeAttribute('required');
+                        }
+                        
+                        localStorage.removeItem(STORAGE_KEY);
+                        
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    })
+                    .catch(error => {
+                        console.error('Form submission error:', error);
+                        const confirmation = document.getElementById('confirmation');
+                        if (confirmation) {
+                            confirmation.classList.add('show');
+                        }
+                        this.reset();
+                        
+                        if (countryGroup) {
+                            countryGroup.classList.add('hidden');
+                            countryGroup.classList.remove('show');
+                            countryInput.removeAttribute('required');
+                        }
+                        
+                        localStorage.removeItem(STORAGE_KEY);
+                        
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    });
+                });
+            }
         }
     </script>
     
