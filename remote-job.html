@@ -384,7 +384,11 @@
         // ========================================
         
         const STORAGE_KEY = 'oneTimeAccess';
-        const TOKEN_EXPIRY_TIME = 120000; // 2 minutes - token expires after this time from creation
+        const ACTIVE_TAB_KEY = 'activeWorkflowTab';
+        
+        // Generate a unique ID for this tab when it loads
+        const TAB_ID = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+        console.log('This tab ID:', TAB_ID);
 
         function checkTokenAccess() {
             console.log('=== Checking Token Access ===');
@@ -401,23 +405,29 @@
                 const data = JSON.parse(session);
                 console.log('Parsed session data:', data);
                 
-                if (!data || !data.token || !data.timestamp) {
-                    console.warn('❌ Invalid session data structure');
+                if (!data || !data.token) {
+                    console.warn('❌ Invalid session data');
                     return false;
                 }
 
-                // Check if token has expired
-                const currentTime = Date.now();
-                const tokenAge = currentTime - data.timestamp;
-                console.log('Token age:', tokenAge + 'ms, Expiry time:', TOKEN_EXPIRY_TIME + 'ms');
+                // Check if an active tab is already using this token
+                const activeTabId = localStorage.getItem(ACTIVE_TAB_KEY);
+                console.log('Active tab ID stored:', activeTabId);
+                console.log('This tab ID:', TAB_ID);
                 
-                if (tokenAge > TOKEN_EXPIRY_TIME) {
-                    console.warn('❌ Token has expired');
-                    localStorage.removeItem(STORAGE_KEY);
+                if (activeTabId && activeTabId !== TAB_ID) {
+                    console.warn('❌ Another tab is already using this token. Only one tab allowed per token.');
                     return false;
                 }
                 
-                console.log('✅ Valid and fresh token found:', data.token.substring(0, 10) + '...');
+                // This is either the first tab or the same tab reloading
+                if (!activeTabId) {
+                    console.log('✅ Claiming this token for this tab');
+                    localStorage.setItem(ACTIVE_TAB_KEY, TAB_ID);
+                } else {
+                    console.log('✅ This is the authorized tab, continuing access');
+                }
+                
                 return true;
                 
             } catch (error) {
@@ -425,6 +435,16 @@
                 return false;
             }
         }
+
+        // When user leaves this page or closes it, clean up
+        window.addEventListener('beforeunload', function() {
+            // Only clear if we're actually leaving (not on form submission redirect)
+            const activeTabId = localStorage.getItem(ACTIVE_TAB_KEY);
+            if (activeTabId === TAB_ID) {
+                console.log('Cleaning up tab ID from localStorage');
+                localStorage.removeItem(ACTIVE_TAB_KEY);
+            }
+        });
 
         function showUnauthorized() {
             console.log('Showing unauthorized message');
@@ -513,8 +533,9 @@
                             countryInput.removeAttribute('required');
                         }
                         
-                        // Clear token only on successful submission
+                        // Clear token and tab marker
                         localStorage.removeItem(STORAGE_KEY);
+                        localStorage.removeItem(ACTIVE_TAB_KEY);
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
@@ -534,8 +555,9 @@
                             countryInput.removeAttribute('required');
                         }
                         
-                        // Clear token on error too
+                        // Clear token and tab marker
                         localStorage.removeItem(STORAGE_KEY);
+                        localStorage.removeItem(ACTIVE_TAB_KEY);
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
