@@ -128,8 +128,10 @@ function isAuthenticated() {
 function saveSession(token) {
     const sessionData = {
         token: token,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        active: true  // ADD THIS - marks token as active/unused
     };
+    console.log('Saving session with active token:', sessionData);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
 }
 
