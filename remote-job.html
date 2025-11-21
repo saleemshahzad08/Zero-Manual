@@ -390,77 +390,30 @@
         const VERIFY_TOKEN_URL = 'https://hussainsaleem.app.n8n.cloud/webhook/tokenVerification';
         const STORAGE_KEY = 'oneTimeAccess';
 
-        async function verifyTokenAccess() {
+        function verifyTokenAccess() {
+            // Check if a valid session token exists locally
+            // We only check for local presence, not backend verification
+            // because the backend treats these as one-time tokens
+            
+            const session = localStorage.getItem(STORAGE_KEY);
+            
+            if (!session) {
+                console.warn('No session found in localStorage');
+                return false;
+            }
+
             try {
-                const session = localStorage.getItem(STORAGE_KEY);
+                const data = JSON.parse(session);
                 
-                if (!session) {
-                    console.warn('No session found in localStorage');
-                    showUnauthorized();
-                    return false;
-                }
-
-                let data;
-                try {
-                    data = JSON.parse(session);
-                } catch (e) {
-                    console.warn('Failed to parse session:', e);
-                    showUnauthorized();
-                    return false;
-                }
-
                 if (!data.token) {
                     console.warn('No token in session data');
-                    showUnauthorized();
                     return false;
                 }
 
-                console.log('Verifying token with backend...');
-
-                // Verify token with backend
-                const response = await fetch(VERIFY_TOKEN_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ token: data.token.trim() })
-                });
-
-                console.log('Backend response status:', response.status);
-
-                if (!response.ok) {
-                    console.warn('Backend response not ok:', response.status);
-                    // Don't show unauthorized yet - response might still have data
-                }
-
-                const result = await response.json();
-                console.log('Backend verification result:', result);
-                
-                if (result.valid === true) {
-                    console.log('Token verified successfully');
-                    return true;
-                } else {
-                    console.warn('Token invalid or expired:', result.message);
-                    showUnauthorized();
-                    return false;
-                }
-            } catch (error) {
-                console.error('Token verification error:', error);
-                console.warn('Falling back to basic token check without backend verification');
-                
-                // Fallback: at least check if token exists locally
-                const session = localStorage.getItem(STORAGE_KEY);
-                if (session) {
-                    try {
-                        const data = JSON.parse(session);
-                        if (data.token) {
-                            console.log('Token found locally, allowing access (backend verification failed)');
-                            return true;
-                        }
-                    } catch (e) {}
-                }
-                
-                showUnauthorized();
+                console.log('Valid session token found locally');
+                return true;
+            } catch (e) {
+                console.warn('Failed to parse session:', e);
                 return false;
             }
         }
@@ -493,8 +446,8 @@
         // PAGE INITIALIZATION - VERIFY TOKEN FIRST
         // ========================================
 
-        document.addEventListener('DOMContentLoaded', async function() {
-            const isAuthorized = await verifyTokenAccess();
+        document.addEventListener('DOMContentLoaded', function() {
+            const isAuthorized = verifyTokenAccess();
             
             if (isAuthorized) {
                 showAuthorized();
