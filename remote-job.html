@@ -232,6 +232,47 @@
             }
         }
 
+        /* Unauthorized access message */
+        .unauthorized-message {
+            display: none;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .unauthorized-message.show {
+            display: block;
+        }
+
+        .unauthorized-message h2 {
+            color: #dc2626;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+        }
+
+        .unauthorized-message p {
+            color: #991b1b;
+            margin-bottom: 16px;
+        }
+
+        .unauthorized-message a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #dc2626;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .unauthorized-message a:hover {
+            background: #991b1b;
+        }
+
         @media (max-width: 768px) {
             .page-container {
                 padding: 40px 24px;
@@ -249,155 +290,260 @@
     <div class="page-container">
         <a href="index.html" class="back-link">Back to Workflows</a>
 
-        <div class="page-header">
-            <span class="ai-badge">AI-Powered Career Tool</span>
-            <h1 class="page-title">Smart Job Finder</h1>
-            <p class="page-subtitle">Submit your details and get instant AI-matched remote/on-premises jobs based on your skills and preferences.</p>
-        </div>
-
-        <div class="info-box">
-            <strong>🚀 Accelerate Your Job Search</strong>
-            Tell us what you're good at—our AI will scan the market and bring you remote jobs that fit.
-        </div>
-
-        <form id="resumeForm" action="https://hussainsaleem.app.n8n.cloud/webhook/d7e74325-b7d6-436b-95ab-7130bc829a5c" method="POST">
-            <div class="form-grid">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fullName">Full Name <span class="required">*</span></label>
-                        <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phoneNumber">Phone Number <span class="required">*</span></label>
-                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+1 (555) 000-0000" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="emailAddress">Email Address <span class="required">*</span></label>
-                        <input type="email" id="emailAddress" name="emailAddress" placeholder="your.email@example.com" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="jobTitle">Job Title<span class="required">*</span></label>
-                        <input type="text" id="jobTitle" name="jobTitle" placeholder="e.g., Senior Software Engineer" required>
-                    </div>
-                </div>
-
-                <!-- New Job Type Dropdown -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobType">Job Type <span class="required">*</span></label>
-                        <select id="jobType" name="jobType" required>
-                            <option value="">Select job type</option>
-                            <option value="remote">Remote</option>
-                            <option value="on-premises">On-Premises</option>
-                        </select>
-                    </div>
-
-                    <!-- Conditional Country Field -->
-                    <div class="form-group hidden" id="countryGroup">
-                        <label for="country">Country <span class="required">*</span></label>
-                        <input type="text" id="country" name="country" placeholder="e.g., United States">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="education">Education Level</label>
-                    <textarea id="education" name="education" placeholder="List degrees, institutions, and graduation years."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="experience">Work Experience</label>
-                    <textarea id="experience" name="experience" placeholder="Describe your roles, responsibilities, and key achievements."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="keySkills">Key Skills</label>
-                    <textarea id="keySkills" name="keySkills" placeholder="List technical and soft skills (e.g., Python, AWS, Leadership)."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="certifications">Certifications (Optional)</label>
-                    <input type="text" id="certifications" name="certifications" placeholder="e.g., PMP, AWS Certified Solutions Architect">
-                </div>
+        <div id="authorizedContent">
+            <div class="page-header">
+                <span class="ai-badge">AI-Powered Career Tool</span>
+                <h1 class="page-title">Smart Job Finder</h1>
+                <p class="page-subtitle">Submit your details and get instant AI-matched remote/on-premises jobs based on your skills and preferences.</p>
             </div>
 
-            <button type="submit" class="submit-button">Find Job Leads</button>
-        </form>
+            <div class="info-box">
+                <strong>🚀 Accelerate Your Job Search</strong>
+                Tell us what you're good at—our AI will scan the market and bring you remote jobs that fit.
+            </div>
 
-        <div id="confirmation" class="confirmation">
-            ✅ Your request has been received. We'll email you job leads soon.
+            <form id="resumeForm" action="https://hussainsaleem.app.n8n.cloud/webhook/d7e74325-b7d6-436b-95ab-7130bc829a5c" method="POST">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName">Full Name <span class="required">*</span></label>
+                            <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+1 (555) 000-0000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="emailAddress">Email Address <span class="required">*</span></label>
+                            <input type="email" id="emailAddress" name="emailAddress" placeholder="your.email@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="jobTitle">Job Title<span class="required">*</span></label>
+                            <input type="text" id="jobTitle" name="jobTitle" placeholder="e.g., Senior Software Engineer" required>
+                        </div>
+                    </div>
+
+                    <!-- New Job Type Dropdown -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jobType">Job Type <span class="required">*</span></label>
+                            <select id="jobType" name="jobType" required>
+                                <option value="">Select job type</option>
+                                <option value="remote">Remote</option>
+                                <option value="on-premises">On-Premises</option>
+                            </select>
+                        </div>
+
+                        <!-- Conditional Country Field -->
+                        <div class="form-group hidden" id="countryGroup">
+                            <label for="country">Country <span class="required">*</span></label>
+                            <input type="text" id="country" name="country" placeholder="e.g., United States">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="education">Education Level</label>
+                        <textarea id="education" name="education" placeholder="List degrees, institutions, and graduation years."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience">Work Experience</label>
+                        <textarea id="experience" name="experience" placeholder="Describe your roles, responsibilities, and key achievements."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keySkills">Key Skills</label>
+                        <textarea id="keySkills" name="keySkills" placeholder="List technical and soft skills (e.g., Python, AWS, Leadership)."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="certifications">Certifications (Optional)</label>
+                        <input type="text" id="certifications" name="certifications" placeholder="e.g., PMP, AWS Certified Solutions Architect">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">Find Job Leads</button>
+            </form>
+
+            <div id="confirmation" class="confirmation">
+                ✅ Your request has been received. We'll email you job leads soon.
+            </div>
+        </div>
+
+        <div id="unauthorizedMessage" class="unauthorized-message">
+            <h2>Access Denied</h2>
+            <p>You need a valid access token to use this workflow. Please start from the main page and verify your token first.</p>
+            <a href="index.html">← Back to Main Page</a>
         </div>
     </div>
 
     <script>
-        // Toggle country field based on job type selection
-        const jobTypeSelect = document.getElementById('jobType');
-        const countryGroup = document.getElementById('countryGroup');
-        const countryInput = document.getElementById('country');
+        // ========================================
+        // TOKEN VERIFICATION
+        // ========================================
+        
+        const VERIFY_TOKEN_URL = 'https://hussainsaleem.app.n8n.cloud/webhook/tokenVerification';
+        const STORAGE_KEY = 'oneTimeAccess';
 
-        jobTypeSelect.addEventListener('change', function() {
-            if (this.value === 'on-premises') {
-                countryGroup.classList.remove('hidden');
-                countryGroup.classList.add('show');
-                countryInput.setAttribute('required', 'required');
-            } else {
-                countryGroup.classList.add('hidden');
-                countryGroup.classList.remove('show');
-                countryInput.removeAttribute('required');
-                countryInput.value = ''; // Clear the field when hidden
+        async function verifyTokenAccess() {
+            try {
+                const session = localStorage.getItem(STORAGE_KEY);
+                
+                if (!session) {
+                    showUnauthorized();
+                    return false;
+                }
+
+                let data;
+                try {
+                    data = JSON.parse(session);
+                } catch (e) {
+                    showUnauthorized();
+                    return false;
+                }
+
+                if (!data.token) {
+                    showUnauthorized();
+                    return false;
+                }
+
+                // Verify token with backend
+                const response = await fetch(VERIFY_TOKEN_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token: data.token.trim() })
+                });
+
+                if (!response.ok) {
+                    showUnauthorized();
+                    return false;
+                }
+
+                const result = await response.json();
+                
+                if (result.valid === true) {
+                    return true;
+                } else {
+                    showUnauthorized();
+                    return false;
+                }
+            } catch (error) {
+                console.error('Token verification error:', error);
+                showUnauthorized();
+                return false;
+            }
+        }
+
+        function showUnauthorized() {
+            const authorizedContent = document.getElementById('authorizedContent');
+            const unauthorizedMessage = document.getElementById('unauthorizedMessage');
+            
+            if (authorizedContent) {
+                authorizedContent.style.display = 'none';
+            }
+            if (unauthorizedMessage) {
+                unauthorizedMessage.classList.add('show');
+            }
+        }
+
+        function showAuthorized() {
+            const authorizedContent = document.getElementById('authorizedContent');
+            const unauthorizedMessage = document.getElementById('unauthorizedMessage');
+            
+            if (authorizedContent) {
+                authorizedContent.style.display = 'block';
+            }
+            if (unauthorizedMessage) {
+                unauthorizedMessage.classList.remove('show');
+            }
+        }
+
+        // ========================================
+        // PAGE INITIALIZATION - VERIFY TOKEN FIRST
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isAuthorized = await verifyTokenAccess();
+            
+            if (isAuthorized) {
+                showAuthorized();
+                initializeForm();
             }
         });
 
-        // Form submission handler
-        document.getElementById('resumeForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // ========================================
+        // FORM LOGIC (only runs if authorized)
+        // ========================================
 
-            const formData = new FormData(this);
+        function initializeForm() {
+            // Toggle country field based on job type selection
+            const jobTypeSelect = document.getElementById('jobType');
+            const countryGroup = document.getElementById('countryGroup');
+            const countryInput = document.getElementById('country');
 
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                document.getElementById('confirmation').classList.add('show');
-                this.reset();
-                
-                // Reset the country field visibility
-                countryGroup.classList.add('hidden');
-                countryGroup.classList.remove('show');
-                countryInput.removeAttribute('required');
-                
-                // Clear the session token
-                localStorage.removeItem('oneTimeAccess');
-                
-                // Redirect back to index.html after 2 seconds
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-            })
-            .catch(error => {
-                // Keep the confirmation for a smooth user experience, even on a mock error
-                document.getElementById('confirmation').classList.add('show');
-                this.reset();
-                
-                // Reset the country field visibility
-                countryGroup.classList.add('hidden');
-                countryGroup.classList.remove('show');
-                countryInput.removeAttribute('required');
-                
-                // Clear the session token
-                localStorage.removeItem('oneTimeAccess');
-                
-                // Redirect back to index.html after 2 seconds
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
+            jobTypeSelect.addEventListener('change', function() {
+                if (this.value === 'on-premises') {
+                    countryGroup.classList.remove('hidden');
+                    countryGroup.classList.add('show');
+                    countryInput.setAttribute('required', 'required');
+                } else {
+                    countryGroup.classList.add('hidden');
+                    countryGroup.classList.remove('show');
+                    countryInput.removeAttribute('required');
+                    countryInput.value = '';
+                }
             });
-        });
+
+            // Form submission handler
+            document.getElementById('resumeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    document.getElementById('confirmation').classList.add('show');
+                    this.reset();
+                    
+                    // Reset the country field visibility
+                    countryGroup.classList.add('hidden');
+                    countryGroup.classList.remove('show');
+                    countryInput.removeAttribute('required');
+                    
+                    // Clear the session token
+                    localStorage.removeItem(STORAGE_KEY);
+                    
+                    // Redirect back to index.html after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                })
+                .catch(error => {
+                    document.getElementById('confirmation').classList.add('show');
+                    this.reset();
+                    
+                    countryGroup.classList.add('hidden');
+                    countryGroup.classList.remove('show');
+                    countryInput.removeAttribute('required');
+                    
+                    localStorage.removeItem(STORAGE_KEY);
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                });
+            });
+        }
     </script>
     
 </body>
