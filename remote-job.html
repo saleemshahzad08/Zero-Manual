@@ -388,20 +388,15 @@
 
         function checkTokenAccess() {
             console.log('=== Checking Token Access ===');
+            console.log('sessionStorage contents:', sessionStorage);
+            console.log('SESSION_FLAG_KEY:', SESSION_FLAG_KEY);
             
             try {
-                // Check if this session already accessed the form
-                const alreadyAccessed = sessionStorage.getItem(SESSION_FLAG_KEY);
-                if (alreadyAccessed) {
-                    console.warn('❌ This session has already accessed the form');
-                    return false;
-                }
-
                 const session = localStorage.getItem(STORAGE_KEY);
-                console.log('Session value:', session);
+                console.log('Session value from localStorage:', session);
                 
                 if (!session) {
-                    console.warn('❌ No session found');
+                    console.warn('❌ No session found in localStorage');
                     return false;
                 }
 
@@ -411,9 +406,16 @@
                 if (data && data.token) {
                     console.log('✅ Valid token found:', data.token.substring(0, 10) + '...');
                     
+                    // Check if form was already submitted in this session
+                    const alreadyAccessed = sessionStorage.getItem(SESSION_FLAG_KEY);
+                    if (alreadyAccessed) {
+                        console.warn('❌ This session has already accessed and used the form');
+                        return false;
+                    }
+                    
                     // Mark this session as having accessed the form (one-time per session)
                     sessionStorage.setItem(SESSION_FLAG_KEY, 'true');
-                    console.log('Session flagged - form can only be accessed once per browser session');
+                    console.log('✅ Session flagged - form access allowed once per browser session');
                     
                     return true;
                 } else {
