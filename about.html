@@ -139,41 +139,50 @@
 
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
             margin-top: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .team-member {
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
+            text-align: center;
+            padding: 2rem 1.5rem;
         }
 
         .team-member:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .team-member-image-container {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
         }
 
         .team-member-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #f3f4f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .team-member-info {
-            padding: 1.5rem;
             text-align: center;
         }
 
         .team-member-name {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: #1f2937;
             margin-bottom: 0.25rem;
@@ -182,7 +191,43 @@
         .team-member-role {
             color: #6366f1;
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .team-member-description {
+            color: #6b7280;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .team-member-socials {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .team-social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #f3f4f6;
+            border-radius: 50%;
+            text-decoration: none;
+            color: #6366f1;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .team-social-link:hover {
+            background: #6366f1;
+            color: white;
+            transform: translateY(-2px);
         }
 
         .cta-section {
@@ -232,9 +277,8 @@
                 direction: ltr;
             }
 
-            .values-grid,
             .team-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
         }
 
@@ -268,32 +312,18 @@
 </head>
 <body>
     <!-- Header -->
-    <!-- Replace the entire <header> section in your index.html, about.html, and contact.html with this: -->
-
-<header class="header">
-    <div class="container">
-        <div class="header-content">
-            <h1 class="logo">ZeroManual</h1>
-
-            <!-- Hamburger Menu Button (Mobile Only) -->
-            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle navigation menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-
-            <!-- Navigation Menu -->
-            <nav class="nav" id="navMenu">
-                <a href="index.html" class="nav-link">Workflows</a>
-                <a href="about.html" class="nav-link active">About</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-            </nav>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">ZeroManual</h1>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Workflows</a>
+                    <a href="about.html" class="nav-link active">About</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </nav>
+            </div>
         </div>
-    </div>
-</header>
-
-
-
+    </header>
 
     <!-- Hero Section -->
     <section class="about-hero">
@@ -353,34 +383,37 @@
 
         <!-- Team Section -->
         <section class="about-section">
-            <h2 style="text-align: center; font-size: 2rem; color: #1f2937; margin-bottom: 2rem;">Our Team</h2>
+            <h2 style="text-align: center; font-size: 2rem; color: #1f2937; margin-bottom: 3rem;">Meet Our Team</h2>
             <div class="team-grid">
                 <div class="team-member">
-                    <div class="team-member-image">👨‍💼</div>
+                    <div class="team-member-image-container">
+                        <img src="images/saleem..jpg" alt="Picture of Saleem Shahzad" class="team-member-image" onerror="this.src='https://via.placeholder.com/400x400/667eea/ffffff?text=Sarah+Johnson'">
+                    </div>
                     <div class="team-member-info">
-                        <div class="team-member-name">Sarah Johnson</div>
+                        <div class="team-member-name">Saleem Shahzad</div>
                         <div class="team-member-role">Founder & CEO</div>
+                        <p class="team-member-description">Visionary leader with deep experience in automation and AI. Passionate about making technology accessible to everyone.</p>
+                        <div class="team-member-socials">
+                            <a href="#" class="team-social-link" title="LinkedIn">in</a>
+                            <a href="#" class="team-social-link" title="Twitter">𝕏</a>
+                            <a href="#" class="team-social-link" title="GitHub">⚙</a>
+                        </div>
                     </div>
                 </div>
+
                 <div class="team-member">
-                    <div class="team-member-image">👨‍💻</div>
-                    <div class="team-member-info">
-                        <div class="team-member-name">Alex Chen</div>
-                        <div class="team-member-role">CTO</div>
+                    <div class="team-member-image-container">
+                        <img src="images/farooq.jpg" alt="Picture of Farooq Hassnain" class="team-member-image" onerror="this.src='https://via.placeholder.com/400x400/667eea/ffffff?text=Alex+Chen'">
                     </div>
-                </div>
-                <div class="team-member">
-                    <div class="team-member-image">👩‍💼</div>
                     <div class="team-member-info">
-                        <div class="team-member-name">Emma Wilson</div>
-                        <div class="team-member-role">Head of Product</div>
-                    </div>
-                </div>
-                <div class="team-member">
-                    <div class="team-member-image">👨‍🔬</div>
-                    <div class="team-member-info">
-                        <div class="team-member-name">David Kumar</div>
-                        <div class="team-member-role">Lead AI Engineer</div>
+                        <div class="team-member-name">Farooq Hassnain</div>
+                        <div class="team-member-role">Co-Founder and Developer</div>
+                        <p class="team-member-description">Expert in cloud architecture and AI integration. Leads our technical innovation and ensures platform reliability.</p>
+                        <div class="team-member-socials">
+                            <a href="#" class="team-social-link" title="LinkedIn">in</a>
+                            <a href="#" class="team-social-link" title="Twitter">𝕏</a>
+                            <a href="#" class="team-social-link" title="GitHub">⚙</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -400,36 +433,5 @@
             <p>&copy; 2025 ZeroManual. All rights reserved.</p>
         </div>
     </footer>
-
-    <script>
-    // Mobile Menu Toggle
-    const hamburgerMenu = document.getElementById('hamburgerMenu');
-    const navMenu = document.getElementById('navMenu');
-
-    if (hamburgerMenu) {
-        hamburgerMenu.addEventListener('click', function() {
-            hamburgerMenu.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu when a link is clicked
-        const navLinks = navMenu.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                hamburgerMenu.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const isClickInsideHeader = document.querySelector('.header').contains(event.target);
-            if (!isClickInsideHeader) {
-                hamburgerMenu.classList.remove('active');
-                navMenu.classList.remove('active');
-            }
-        });
-    }
-</script>
 </body>
 </html>
