@@ -323,6 +323,8 @@ requestEmailInput.addEventListener('keypress', function(e) {
 });
 
 // FIX: Verify Token Button Click - Now redirects after modal closes
+// Find this section in your script.js and REPLACE it completely
+
 submitTokenBtn.addEventListener('click', async function() {
     const token = tokenInput.value.trim();
 
@@ -338,19 +340,33 @@ submitTokenBtn.addEventListener('click', async function() {
         const result = await verifyToken(token);
 
         if (result.valid === true) {
-            saveSession(token);
+            // SAVE SESSION WITH GUARANTEED PERSISTENCE
+            const sessionData = {
+                token: token,
+                timestamp: Date.now()
+            };
             
-            // Store the URL BEFORE anything else
+            console.log('Saving token to localStorage:', sessionData);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+            
+            // Force flush to localStorage
+            const saved = localStorage.getItem(STORAGE_KEY);
+            console.log('Verified saved token:', saved);
+            
             const urlToRedirect = pendingWorkflowUrl;
-            console.log('Token verified. Redirecting to:', urlToRedirect);
+            console.log('Token saved. Will redirect to:', urlToRedirect);
             
             // Close modal
             closeVerifyModal();
             
-            // Redirect immediately (don't wait for modal animation)
-            if (urlToRedirect) {
-                window.location.href = urlToRedirect;
-            }
+            // ADD DELAY to ensure localStorage is persisted before navigation
+            setTimeout(() => {
+                if (urlToRedirect) {
+                    console.log('Redirecting to:', urlToRedirect);
+                    window.location.href = urlToRedirect;
+                }
+            }, 500);  // 500ms delay gives localStorage time to persist
+            
         } else {
             showVerifyError(result.message || 'Invalid or expired token');
             enableVerifyButton();
