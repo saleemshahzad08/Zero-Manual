@@ -89,7 +89,7 @@ const products = [
         shortDescription: "Generate, send, and track invoices automatically.",
         longDescription: "Simplify your billing process with our Invoice Automation workflow. Automatically generate professional invoices based on project completion or time tracking data, send them to clients, track payment status, and send gentle reminders for overdue payments. Perfect for freelancers and small businesses.",
         category: "Finance",
-        image: "https://images.unsplash.com/photo-1554224311-beee460201f9?w=800&h=600&fit=crop",
+        image: "images/invoice.jpg",
         tryUrl: "https://n8n.cloud/webhook/invoice456",
         features: [
             "Automatic invoice generation from time logs",
