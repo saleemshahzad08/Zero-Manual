@@ -268,18 +268,32 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="logo">ZeroManual</h1>
-                <nav class="nav">
-                    <a href="index.html" class="nav-link">Workflows</a>
-                    <a href="about.html" class="nav-link active">About</a>
-                    <a href="contact.html" class="nav-link">Contact</a>
-                </nav>
-            </div>
+    <!-- Replace the entire <header> section in your index.html, about.html, and contact.html with this: -->
+
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <h1 class="logo">ZeroManual</h1>
+            
+            <!-- Hamburger Menu Button (Mobile Only) -->
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Navigation Menu -->
+            <nav class="nav" id="navMenu">
+                <a href="index.html" class="nav-link active">Workflows</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
         </div>
-    </header>
+    </div>
+</header>
+
+
+
 
     <!-- Hero Section -->
     <section class="about-hero">
@@ -386,5 +400,36 @@
             <p>&copy; 2025 ZeroManual. All rights reserved.</p>
         </div>
     </footer>
+
+    <script>
+    // Mobile Menu Toggle
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const navMenu = document.getElementById('navMenu');
+
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', function() {
+            hamburgerMenu.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        const navLinks = navMenu.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                hamburgerMenu.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInsideHeader = document.querySelector('.header').contains(event.target);
+            if (!isClickInsideHeader) {
+                hamburgerMenu.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    }
+</script>
 </body>
 </html>
