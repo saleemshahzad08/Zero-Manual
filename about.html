@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | ZeroManual - AI Automation Solutions</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Page-specific styles */
+        body {
+            background: #f9fafb;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 30px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #4f46e5;
+        }
+
+        .back-link::before {
+            content: '←';
+            font-size: 1.25rem;
+        }
+
+        .about-hero {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .about-hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .about-hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        .about-section {
+            margin-bottom: 4rem;
+        }
+
+        .about-section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-section-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-section-content p {
+            color: #6b7280;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .about-section-image {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-section:nth-child(even) .about-section-grid {
+            direction: rtl;
+        }
+
+        .about-section:nth-child(even) .about-section-content {
+            direction: ltr;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .value-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .value-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .value-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .value-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+
+        .value-card p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .team-member {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-member-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .team-member-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .team-member-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .team-member-role {
+            color: #6366f1;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 4rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            background: white;
+            color: #6366f1;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .about-section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-section:nth-child(even) .about-section-grid {
+                direction: ltr;
+            }
+
+            .values-grid,
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-hero-title {
+                font-size: 2rem;
+            }
+
+            .about-hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .about-content {
+                padding: 2rem 1rem;
+            }
+
+            .about-section-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .values-grid,
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-section h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">ZeroManual</h1>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Workflows</a>
+                    <a href="about.html" class="nav-link active">About</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="about-hero">
+        <div class="container">
+            <h2 class="about-hero-title">About ZeroManual</h2>
+            <p class="about-hero-subtitle">Empowering businesses with intelligent automation solutions powered by cutting-edge AI technology</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="about-content">
+        <!-- Mission Section -->
+        <section class="about-section">
+            <div class="about-section-grid">
+                <div class="about-section-content">
+                    <h2>Our Mission</h2>
+                    <p>At ZeroManual, we believe that businesses should spend less time on repetitive tasks and more time on what matters. Our mission is to revolutionize workflow automation by making sophisticated AI accessible to everyone, regardless of technical expertise.</p>
+                    <p>We're committed to eliminating manual work and empowering teams with intelligent automation solutions that save time, reduce errors, and drive growth.</p>
+                </div>
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop" alt="Our Mission" class="about-section-image" onerror="this.src='https://via.placeholder.com/800x600/667eea/ffffff?text=Our+Mission'">
+            </div>
+        </section>
+
+        <!-- Vision Section -->
+        <section class="about-section">
+            <div class="about-section-grid">
+                <div class="about-section-content">
+                    <h2>Our Vision</h2>
+                    <p>We envision a future where AI-powered automation is the standard across all industries. Our goal is to create a world where businesses of all sizes can leverage advanced automation technology without needing dedicated engineering teams.</p>
+                    <p>Through continuous innovation and customer-centric design, we're building the platform that will define the next generation of workflow automation.</p>
+                </div>
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop" alt="Our Vision" class="about-section-image" onerror="this.src='https://via.placeholder.com/800x600/667eea/ffffff?text=Our+Vision'">
+            </div>
+        </section>
+
+        <!-- Core Values Section -->
+        <section class="about-section">
+            <h2 style="text-align: center; font-size: 2rem; color: #1f2937; margin-bottom: 2rem;">Our Core Values</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">⚡</div>
+                    <h3>Innovation</h3>
+                    <p>We constantly push the boundaries of what's possible with AI and automation technology.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🎯</div>
+                    <h3>Reliability</h3>
+                    <p>Our solutions are built to be dependable and performant, every single time.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">👥</div>
+                    <h3>User-Centric</h3>
+                    <p>We design with our users in mind, making complex automation accessible to all.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="about-section">
+            <h2 style="text-align: center; font-size: 2rem; color: #1f2937; margin-bottom: 2rem;">Our Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="team-member-image">👨‍💼</div>
+                    <div class="team-member-info">
+                        <div class="team-member-name">Sarah Johnson</div>
+                        <div class="team-member-role">Founder & CEO</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="team-member-image">👨‍💻</div>
+                    <div class="team-member-info">
+                        <div class="team-member-name">Alex Chen</div>
+                        <div class="team-member-role">CTO</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="team-member-image">👩‍💼</div>
+                    <div class="team-member-info">
+                        <div class="team-member-name">Emma Wilson</div>
+                        <div class="team-member-role">Head of Product</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="team-member-image">👨‍🔬</div>
+                    <div class="team-member-info">
+                        <div class="team-member-name">David Kumar</div>
+                        <div class="team-member-role">Lead AI Engineer</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Ready to Automate Your Workflows?</h2>
+            <p>Join thousands of businesses already using ZeroManual to streamline their operations and boost productivity.</p>
+            <a href="index.html" class="cta-button">Explore Workflows</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ZeroManual. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
