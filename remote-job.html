@@ -395,6 +395,7 @@
                 const session = localStorage.getItem(STORAGE_KEY);
                 
                 if (!session) {
+                    console.warn('No session found in localStorage');
                     showUnauthorized();
                     return false;
                 }
@@ -403,14 +404,18 @@
                 try {
                     data = JSON.parse(session);
                 } catch (e) {
+                    console.warn('Failed to parse session:', e);
                     showUnauthorized();
                     return false;
                 }
 
                 if (!data.token) {
+                    console.warn('No token in session data');
                     showUnauthorized();
                     return false;
                 }
+
+                console.log('Verifying token with backend...');
 
                 // Verify token with backend
                 const response = await fetch(VERIFY_TOKEN_URL, {
@@ -421,21 +426,40 @@
                     body: JSON.stringify({ token: data.token.trim() })
                 });
 
+                console.log('Backend response status:', response.status);
+
                 if (!response.ok) {
-                    showUnauthorized();
-                    return false;
+                    console.warn('Backend response not ok:', response.status);
+                    // Don't show unauthorized yet - response might still have data
                 }
 
                 const result = await response.json();
+                console.log('Backend verification result:', result);
                 
                 if (result.valid === true) {
+                    console.log('Token verified successfully');
                     return true;
                 } else {
+                    console.warn('Token invalid or expired:', result.message);
                     showUnauthorized();
                     return false;
                 }
             } catch (error) {
                 console.error('Token verification error:', error);
+                console.warn('Falling back to basic token check without backend verification');
+                
+                // Fallback: at least check if token exists locally
+                const session = localStorage.getItem(STORAGE_KEY);
+                if (session) {
+                    try {
+                        const data = JSON.parse(session);
+                        if (data.token) {
+                            console.log('Token found locally, allowing access (backend verification failed)');
+                            return true;
+                        }
+                    } catch (e) {}
+                }
+                
                 showUnauthorized();
                 return false;
             }
